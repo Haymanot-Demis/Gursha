@@ -12,7 +12,7 @@ To install the project, you will need to have Node.js and npm installed on your 
 git clone https://github.com/Haymanot-Demis/Mobile-Banking
 ```
 ```bash
-cd <repository-directory>
+cd Mobile-Banking
 ```
 ```bash
 npm install
