@@ -1,0 +1,74 @@
+{
+  "bankAccounts": [
+    {
+      "id": "1",
+      "fullName": "John Doe",
+      "accountNumber": "1234567890",
+      "phoneNumber": "+251949960922",
+      "balance": 5200
+    },
+    {
+      "id": "2",
+      "fullName": "Alice Smith",
+      "accountNumber": "2345678901",
+      "phoneNumber": "+251949960922",
+      "balance": 2000
+    },
+    {
+      "id": "3",
+      "fullName": "Bob Johnson",
+      "accountNumber": "3456789012",
+      "phoneNumber": "+251949960922",
+      "balance": 3000
+    },
+    {
+      "id": "4",
+      "fullName": "Emma Lee",
+      "accountNumber": "4567890123",
+      "phoneNumber": "+251949960922",
+      "balance": 4000
+    },
+    {
+      "id": "5",
+      "fullName": "Michael Brown",
+      "accountNumber": "5678901234",
+      "phoneNumber": "+251949960922",
+      "balance": 5000
+    },
+    {
+      "id": "6",
+      "fullName": "Sarah Wilson",
+      "accountNumber": "6789012345",
+      "phoneNumber": "+251949960922",
+      "balance": 1800
+    },
+    {
+      "id": "7",
+      "fullName": "David Martinez",
+      "accountNumber": "7890123456",
+      "phoneNumber": "+251949960922",
+      "balance": 7000
+    },
+    {
+      "id": "8",
+      "fullName": "Linda Taylor",
+      "accountNumber": "8901234567",
+      "phoneNumber": "+251949960922",
+      "balance": 8000
+    },
+    {
+      "id": "9",
+      "fullName": "Christopher Harris",
+      "accountNumber": "9012345678",
+      "phoneNumber": "+251949960922",
+      "balance": 9000
+    },
+    {
+      "id": "10",
+      "fullName": "Jennifer Clark",
+      "accountNumber": "0123456789",
+      "phoneNumber": "+251949960922",
+      "balance": 10000
+    }
+  ]
+}
