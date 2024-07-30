@@ -1,0 +1,238 @@
+{
+    "info": {
+        "_postman_id": "ac3c21f1-578d-4b27-8f6c-686c1abf8c36",
+        "name": "Goh",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "create account",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "auth/create",
+                            "path": [
+                                "create"
+                            ],
+                            "host": [
+                                "auth"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"data\":\"U2FsdGVkX18UONw6vrOr0F1fyDinky947VL9KbXs3Mi8U7h8g/AlnFb5jTiSgXXU\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Activation Code",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "auth/activation-code",
+                            "path": [
+                                "activation-code"
+                            ],
+                            "host": [
+                                "auth"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"data\": \"U2FsdGVkX18UONw6vrOr0F1fyDinky947VL9KbXs3Mi8U7h8g/AlnFb5jTiSgXXU\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Activate",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "auth/activate",
+                            "path": [
+                                "activate"
+                            ],
+                            "host": [
+                                "auth"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"data\":\"U2FsdGVkX18Qz9aXn9ecoCgDHNirE0bapXXdDCgNH2wsQoJv9wEFlHgulkKVS+UgFKI5ROiorXLKM5pNZ94rUlaKEaqyYBDgvmslUZcLMjkdFxAB/9XENBEaEFCWecWP\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "auth/login",
+                            "path": [
+                                "login"
+                            ],
+                            "host": [
+                                "auth"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n \"data\":\"U2FsdGVkX1/wN/APj1dPaZC+SOIWqA3eKrH2eRJ3TuBrAWmclrXg+wAlxZtQMguHvqJKq6mW6FITinfZ+eL89PFlyX3hqjGsD7peCBU43eMMxb9xEXRT2Zox4GpYaT08\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "encryption",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "crypto/encrypt",
+                            "path": [
+                                "encrypt"
+                            ],
+                            "host": [
+                                "crypto"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"amount\":50,\n  \"recipientAccountNumber\":\"1234567890\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "decryption",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "crypto/decrypt",
+                            "path": [
+                                "decrypt"
+                            ],
+                            "host": [
+                                "crypto"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"data\":\"U2FsdGVkX192D+PlrE82HG4IadkPpV4E76zFl9drGEM/386Po4PluIC6uOB9/7Dxz6v0IpoQO0Q2uYWO5D754DL7V42vLEs9acKhQ1XQf7YrKEhLLHS8uHaHa/7q15AH\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "generate key pairs",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "crypto/generate-key-pairs",
+                            "path": [
+                                "generate-key-pairs"
+                            ],
+                            "host": [
+                                "crypto"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Transaction",
+            "item": [
+                {
+                    "name": "transfer",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "transaction/transfer",
+                            "path": [
+                                "transfer"
+                            ],
+                            "host": [
+                                "transaction"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"data\": \"U2FsdGVkX1/zMm6Rz2wHzd1lM0u7jCIKWG78ULxh10kDllvPE/WhDNlqrJnTjn+wSLtt8GeFhaYozVnitKbQOnB0rmR9h1u5vgjk+wZlgU0=\"\n}"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50TnVtYmVyIjoiNjc4OTAxMjM0NSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTcxMjczNTYyNX0.FuTyl-rsaJdkx3pE-sAcmeqogeYXzIyJcHqcIx2WdAk",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "get balance",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "transaction/balance",
+                            "path": [
+                                "balance"
+                            ],
+                            "host": [
+                                "transaction"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50TnVtYmVyIjoiNjc4OTAxMjM0NSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTcxMjcwMjA1M30.3unPHMTBIZajymTZ-EiP5G6QUmF6puQvbA7N63GgrwQ",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
