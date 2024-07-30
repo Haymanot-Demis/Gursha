@@ -15,7 +15,7 @@ enum ErrorType {
 	BAD_REQUEST_ERROR = "Resource_Already_Exists_Error",
 }
 
-abstract class CustomError extends Error {
+export abstract class CustomError extends Error {
 	abstract statusCode: number;
 
 	constructor(message?: string) {

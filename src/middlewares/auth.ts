@@ -3,7 +3,11 @@ import { verifyJWTToken } from "../utils/auth";
 import userRepository from "../repositories/user.repository";
 import { ResourceNotFoundError } from "../utils/error";
 
-const authToken = async (req: Request, res: Response, next: NextFunction) => {
+const authenticate = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const header = req.header("Authorization");
 
 	if (!header) return res.status(401).send("No auth header");
@@ -15,12 +19,10 @@ const authToken = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const decoded = verifyJWTToken(token);
 		const user = await userRepository.findOne({
-			where: { accountNumber: decoded.accountNumber },
+			where: { id: decoded.id },
 		});
-		if (!user)
-			throw new ResourceNotFoundError(
-				`User with account number ${decoded?.accountNumber} not found`
-			);
+		if (!user) throw new ResourceNotFoundError(`User not found`);
+
 		// @ts-ignore
 		req.user = user;
 		next();
@@ -38,4 +40,4 @@ const authRole = (roles: string[]) => {
 	};
 };
 
-export default authToken;
+export { authenticate, authRole };

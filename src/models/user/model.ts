@@ -11,28 +11,31 @@ export default class User implements IUser {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@Column()
-	accountNumber: string;
+	@Column({ nullable: false })
+	fullname: string;
 
-	@Column()
+	@Column({ nullable: false, unique: true })
+	email: string;
+
+	@Column({ nullable: false })
 	passwordHash: string;
 
 	@Column({ nullable: true })
-	deviceCodeHash: string;
-
-	@Column({ nullable: true })
-	secretKey: string;
+	phoneNumber: string;
 
 	@Column({ default: false })
 	isAccountLocked: boolean;
 
-	@Column({ default: false })
+	@Column({ default: true })
 	isAccountActive: boolean;
+
+	@Column({ default: false })
+	isEmailVerified: boolean;
 
 	@Column({ default: 0 })
 	failedLoginAttempts: number;
 
-	@Column({ type: "enum", enum: Role, default: Role.CUSTOMER })
+	@Column({ enum: Role, default: Role.CLIENT })
 	role: Role;
 
 	@CreateDateColumn()

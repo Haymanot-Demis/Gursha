@@ -11,6 +11,11 @@ export const {
 	DB_PASSWORD = "",
 	DB_NAME = "",
 	DB_URL = "",
+
+	MAIL_HOST = "",
+	MAIL_PASSWORD = "",
+	MAIL_USERNAME = "",
+	APP_ORIGIN = "http://localhost:" + APP_PORT,
 } = process.env;
 
 export const BASE_URL = process.env.BASE_URL;

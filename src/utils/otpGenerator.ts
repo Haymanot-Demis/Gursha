@@ -1,6 +1,4 @@
 import otpgenerator from "otp-generator";
-import bcrypt from "bcrypt";
-import { SALT } from "../config/config";
 
 const generatePIN = () => {
 	return otpgenerator.generate(4, {
@@ -9,5 +7,12 @@ const generatePIN = () => {
 		specialChars: false,
 	});
 };
+const generateOTP = (length: Number) =>
+	otpgenerator.generate(length, {
+		digits: true,
+		lowerCaseAlphabets: false,
+		upperCaseAlphabets: false,
+		specialChars: false,
+	});
 
-export { generatePIN };
+export { generatePIN, generateOTP };

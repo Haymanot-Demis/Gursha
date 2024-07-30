@@ -2,16 +2,30 @@ import jwt from "jsonwebtoken";
 import User from "../models/user/model";
 import { JWT_SECRET, SALT } from "../config/config";
 import bcrypt from "bcrypt";
+import { unauthunticatedError } from "./error";
 
 const generateJWTToken = (user: User) => {
-	return jwt.sign(
-		{ accountNumber: user.accountNumber, role: user.role },
-		JWT_SECRET
+	const accessToken = jwt.sign(
+		{ id: user.id, email: user.email, role: user.role },
+		JWT_SECRET,
+		{ expiresIn: "15m" }
 	);
+
+	const refreshToken = jwt.sign(
+		{ id: user.id, email: user.email, role: user.role },
+		JWT_SECRET,
+		{ expiresIn: "7d" }
+	);
+
+	return { accessToken, refreshToken };
 };
 
 const verifyJWTToken = (token: string) => {
-	return jwt.verify(token, JWT_SECRET);
+	try {
+		return jwt.verify(token, JWT_SECRET);
+	} catch (error) {
+		throw new unauthunticatedError("Invalid token");
+	}
 };
 
 const bcryptHash = async (value): Promise<string> => {

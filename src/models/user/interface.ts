@@ -2,12 +2,12 @@ import { Role } from "../../config/constants";
 import Base from "../baseModel/interface";
 
 export default interface IUser extends Base {
-	accountNumber: string;
+	fullname: string;
+	email: string;
 	passwordHash: string;
-	deviceCodeHash: string;
+	phoneNumber: string;
 	isAccountLocked: boolean;
 	isAccountActive: boolean;
 	failedLoginAttempts: number;
-	secretKey: string;
 	role: Role;
 }
