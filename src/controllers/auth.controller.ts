@@ -274,7 +274,7 @@ export default class AuthController {
 
 		const authToken = generateJWTToken(user);
 
-		res.status(204).json(
+		res.status(200).json(
 			new CustomResponse(true, "Password reset successfully", {
 				...authToken,
 			})
@@ -302,7 +302,7 @@ export default class AuthController {
 		await userRepository.save(user);
 
 		res
-			.status(204)
+			.status(200)
 			.json(new CustomResponse(true, "Password changed successfully"));
 	});
 
@@ -314,7 +314,7 @@ export default class AuthController {
 		if (!user) {
 			throw new ResourceNotFoundError("User not found");
 		}
-
+    
 		user.failedLoginAttempts = 0;
 		user.isAccountLocked = false;
 
