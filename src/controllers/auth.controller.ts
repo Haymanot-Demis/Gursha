@@ -314,7 +314,7 @@ export default class AuthController {
 		if (!user) {
 			throw new ResourceNotFoundError("User not found");
 		}
-
+    
 		user.failedLoginAttempts = 0;
 		user.isAccountLocked = false;
 
