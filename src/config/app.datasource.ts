@@ -8,7 +8,6 @@ export const appDataSource: DataSource = new DataSource({
 	// username: DB_USERNAME,
 	// password: DB_PASSWORD,
 	url: DB_URL,
-	database: "goh",
 	synchronize: true,
 	logging: false,
 	entities: ["src/models/**/*.ts"],
