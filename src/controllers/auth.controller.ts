@@ -32,7 +32,7 @@ export default class AuthController {
 		const userExist = await userRepository.findOne({ where: { email } });
 
 		if (userExist) {
-			throw new BadRequest("Email already exist, please login");
+			throw new BadRequest("Email already exist");
 		}
 
 		const user = new User();
@@ -314,7 +314,7 @@ export default class AuthController {
 		if (!user) {
 			throw new ResourceNotFoundError("User not found");
 		}
-    
+
 		user.failedLoginAttempts = 0;
 		user.isAccountLocked = false;
 

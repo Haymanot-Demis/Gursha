@@ -21,11 +21,18 @@ export const {
 export const BASE_URL = process.env.BASE_URL;
 export const SALT: number = +process.env.SALT;
 export const JWT_SECRET = process.env.JWT_SECRET;
+export const SESSION_SECRET = process.env.SESSION_SECRET;
 
 export const {
 	TWILIO_ACCOUNT_SID = "",
 	TWILIO_AUTH_TOKEN = "",
 	TWILIO_PHONE_NUMBER = "",
+} = process.env;
+
+export const {
+	GOOGLE_CLIENT_ID = "",
+	GOOGLE_CLIENT_SECRET = "",
+	GOOGLE_CALLBACK_URL,
 } = process.env;
 
 export const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
