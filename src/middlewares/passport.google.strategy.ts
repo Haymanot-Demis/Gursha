@@ -8,20 +8,46 @@ const googleStrategy = new GoogleStrategy(
 		clientID: envVars.GOOGLE_CLIENT_ID,
 		clientSecret: envVars.GOOGLE_CLIENT_SECRET,
 		callbackURL: envVars.GOOGLE_CALLBACK_URL,
+		scope: [
+			"profile",
+			"email",
+			"https://www.googleapis.com/auth/contacts.readonly",
+		],
 	},
 	async (accessToken, refreshToken, profile, done) => {
-		// Save the user to the database
-		console.log("accessToken", accessToken);
-		console.log("refreshToken", refreshToken);
 		console.log("profile", profile);
+
 		var user: User | undefined;
 		try {
 			user = await userRepository.findOne({
-				where: { email: profile.emails.values[0] },
+				where: { email: profile._json.email },
 			});
+
+			if (user) {
+				return done(null, user);
+			}
+
+			user = new User();
+			user.email = profile._json.email;
+			user.fullname = profile._json.name;
+			user.phoneNumber = profile._json.sub;
 		} catch (err) {
-			return done(err, user);
+			console.log("Error finding user", err);
+			return done(err, null);
 		}
+
+		if (user) {
+			return done(null, user);
+		}
+
+		user = new User();
+		user.email = profile._json.email;
+		user.fullname = profile._json.name;
+
+		await userRepository.save(user);
+
+		console.log("done with user", user);
+
 		return done(null, user);
 	}
 );
