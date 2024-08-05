@@ -23,3 +23,11 @@ export const sendSMS = async (to: string, body: string) => {
 		throw new UnknownError("Failed to send SMS");
 	}
 };
+
+export const sendPhoneNumberVerificationSMS = async (
+	phoneNumber: string,
+	otp: string
+) => {
+	const message = `Your OTP from Gursha: ${otp}`;
+	return await sendSMS(phoneNumber, message);
+};

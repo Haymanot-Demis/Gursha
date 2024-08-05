@@ -14,13 +14,13 @@ export default class User implements IUser {
 	@Column({ nullable: false })
 	fullname: string;
 
-	@Column({ nullable: false, unique: true })
+	@Column({ nullable: true, unique: true })
 	email: string;
 
 	@Column({ nullable: false })
 	passwordHash: string;
 
-	@Column({ nullable: true })
+	@Column({ nullable: true, unique: true })
 	phoneNumber: string;
 
 	@Column({ default: false })
