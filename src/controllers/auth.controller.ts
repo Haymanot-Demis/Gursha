@@ -26,7 +26,7 @@ import {
 import Token from "../models/verificationCode/model";
 import { TokenTypes } from "../config/constants";
 import tokenRepository from "../repositories/token.repository";
-import { sendSMS } from "../services/twilio.sms.service";
+import { sendSMS, sendSMSApi } from "../services/twilio.sms.service";
 import {
 	resetPasswordExpirationSeconds,
 	SMS_API,
@@ -79,20 +79,7 @@ export default class AuthController {
 			);
 
 			try {
-				const result = await fetch(SMS_API, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						to: phoneNumber,
-						body: `Your OTP is ${OTP.token}`,
-						apiKey: {
-							id: "17c00710-c28b-445a-8bfb-ad63fea6b3d6",
-							key: "kEplAJFQGkv69sPCGvJ6kF8n6J3yHwYW",
-						},
-					}),
-				});
+				const result = await sendSMSApi(phoneNumber, OTP.token);
 				console.log("result", result);
 				const data = await result.json();
 				if (!result.status?.toString().startsWith("2")) {
@@ -137,10 +124,18 @@ export default class AuthController {
 				await sendVerificationEmail(user, verificationToken);
 				message = "Email is not verified, please check your email";
 			} else if (phoneNumber) {
-				const smsResponse = sendSMS(user.phoneNumber, verificationToken.token);
-				console.log("message", smsResponse);
+				// const smsResponse = sendSMS(user.phoneNumber, verificationToken.token);
+				// console.log("message", smsResponse);
+				const result = await sendSMSApi(phoneNumber, verificationToken.token);
+				console.log("result", result);
+				const data = await result.json();
+				if (!result.status?.toString().startsWith("2")) {
+					throw new SMSSendingError(data.message);
+				}
 				message = "Email is not verified, please check your phone for OTP";
 			}
+
+			await tokenRepository.save(verificationToken);
 
 			throw new AccountNotVerifiedError(message);
 		}
@@ -269,8 +264,14 @@ export default class AuthController {
 				message =
 					"Email verification token expired, check your email for new token";
 			} else if (phoneNumber) {
-				const smsResponse = await sendSMS(user.phoneNumber, newToken.token);
-				console.log("message", smsResponse);
+				const result = await sendSMSApi(phoneNumber as string, newToken.token);
+				console.log("result", result);
+				const data = await result.json();
+				if (!result.status?.toString().startsWith("2")) {
+					throw new SMSSendingError(data.message);
+				}
+				// const smsResponse = await sendSMS(user.phoneNumber, newToken.token);
+				// console.log("message", smsResponse);
 				message =
 					"Phone number verification OPT expired, check your phone for new one";
 			}
@@ -301,29 +302,38 @@ export default class AuthController {
 		}
 
 		if (!user.isEmailVerified) {
-			const resetPasswordToken = generateToken(
+			const verificationToken = generateToken(
 				user,
 				TokenTypes.RESET_PASSWORD_TOKEN,
 				resetPasswordExpirationSeconds
 			);
 			let message = "";
 			if (email) {
-				await sendVerificationEmail(user, resetPasswordToken);
+				await sendVerificationEmail(user, verificationToken);
 				message =
 					"Email is not verified, please check your email for verification token";
 			} else if (phoneNumber) {
-				const smsResponse = await sendSMS(
-					user.phoneNumber,
-					resetPasswordToken.token
+				const result = await sendSMSApi(
+					phoneNumber as string,
+					verificationToken.token
 				);
-				console.log("message", smsResponse);
+				console.log("result", result);
+				const data = await result.json();
+				if (!result.status?.toString().startsWith("2")) {
+					throw new SMSSendingError(data.message);
+				}
+				// const smsResponse = await sendSMS(
+				// 	user.phoneNumber,
+				// 	resetPasswordToken.token
+				// );
+				// console.log("message", smsResponse);
 				message =
 					"Phone number is not verified, please check your phone for verification OTP";
 			}
 
-			throw new AccountNotVerifiedError(
-				"Email is not verified, please check your email for verification token"
-			);
+			await tokenRepository.save(verificationToken);
+
+			throw new AccountNotVerifiedError(message);
 		}
 
 		const token = generateToken(
@@ -339,8 +349,14 @@ export default class AuthController {
 			await sendPasswordResetEmail(user, token);
 			message = "Password reset OTP sent successfully to your email";
 		} else if (phoneNumber) {
-			const smsResponse = await sendSMS(user.phoneNumber, token.token);
-			console.log("message", smsResponse);
+			const result = await sendSMSApi(phoneNumber as string, token.token);
+			console.log("result", result);
+			const data = await result.json();
+			if (!result.status?.toString().startsWith("2")) {
+				throw new SMSSendingError(data.message);
+			}
+			// const smsResponse = await sendSMS(user.phoneNumber, token.token);
+			// console.log("message", smsResponse);
 			message = "Password reset OTP sent successfully to your phone number";
 		}
 		user.passwordHash = undefined;

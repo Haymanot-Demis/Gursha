@@ -33,6 +33,8 @@ export const {
 } = envVars;
 
 export const SMS_API = envVars.SMS_API;
+export const SMS_AID = envVars.SMS_AID;
+export const SMS_KEY = envVars.SMS_KEY;
 
 export const {
 	GOOGLE_CLIENT_ID = "",
