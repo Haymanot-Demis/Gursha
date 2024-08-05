@@ -10,4 +10,4 @@ RUN npm install -D ts-node
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 # Run index.js with increased memory limit
-CMD ["npm", "start"]
+CMD ["npm", "--max-old-space-size=4096", "start"]
