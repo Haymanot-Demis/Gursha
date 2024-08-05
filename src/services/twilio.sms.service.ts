@@ -1,6 +1,9 @@
 import twilio from "twilio";
 import { UnknownError } from "../utils/error";
 import {
+	SMS_AID,
+	SMS_API,
+	SMS_KEY,
 	TWILIO_ACCOUNT_SID,
 	TWILIO_AUTH_TOKEN,
 	TWILIO_PHONE_NUMBER,
@@ -30,4 +33,23 @@ export const sendPhoneNumberVerificationSMS = async (
 ) => {
 	const message = `Your OTP from Gursha: ${otp}`;
 	return await sendSMS(phoneNumber, message);
+};
+
+export const sendSMSApi = async (phoneNumber: string, OTP: string) => {
+	const result = await fetch(SMS_API, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			to: phoneNumber,
+			body: `Your OTP is ${OTP}`,
+			apiKey: {
+				id: SMS_AID,
+				key: SMS_KEY,
+			},
+		}),
+	});
+
+	return result;
 };
