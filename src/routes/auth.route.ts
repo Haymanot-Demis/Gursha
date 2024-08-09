@@ -5,20 +5,43 @@ import passport from "passport";
 import User from "../models/user/model";
 import { generateJWTToken } from "../utils/auth";
 import Token from "../models/verificationCode/model";
-import { TokenTypes } from "../config/constants";
+import { TokenTypes, validationSource } from "../config/constants";
 import tokenRepository from "../repositories/token.repository";
 import { CustomResponse } from "../config/response";
+import { validate } from "../middlewares/validate";
+import { authScema } from "../validations/auth.schema";
 
 const router = Router();
 const authController = new AuthController();
 
-router.post("/register", authController.register);
-router.post("/login", authController.login);
-router.put("/refreshToken", authController.refreshToken);
-router.get("/verifyEmail", authController.verifyEmailOrPhoneNumber);
-router.get("/forgotPassword", authController.forgotPassword);
-router.put("/changePassword", authenticate, authController.changePassword);
-router.put("/resetPassword", authController.resetPassword);
+router.post("/register", validate(authScema.register), authController.register);
+router.post("/login", validate(authScema.login), authController.login);
+router.put(
+	"/refreshToken",
+	validate(authScema.refreshToken),
+	authController.refreshToken
+);
+router.get(
+	"/verifyEmailOrPhoneNumber",
+	validate(authScema.verifyEmailOrPhoneNumber, validationSource.QUERY),
+	authController.verifyEmailOrPhoneNumber
+);
+router.get(
+	"/forgotPassword",
+	validate(authScema.forgetPassword, validationSource.QUERY),
+	authController.forgotPassword
+);
+router.put(
+	"/changePassword",
+	validate(authScema.changePassword),
+	authenticate,
+	authController.changePassword
+);
+router.put(
+	"/resetPassword",
+	validate(authScema.resetPassword),
+	authController.resetPassword
+);
 router.put("/unlock", authController.unlock); // allowed to the bank staff only
 
 router.get("/google", passport.authenticate("google"));
