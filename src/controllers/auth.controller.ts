@@ -35,7 +35,8 @@ import {
 
 export default class AuthController {
 	register = catchAsync(async (req: Request, res: Response) => {
-		const { fullname, email, password, phoneNumber, isMobile } = req.body;
+		const { firstname, lastname, email, password, phoneNumber, isMobile } =
+			req.body;
 
 		const userExist = await userRepository.findOne({
 			where: [{ email }, { phoneNumber }],
@@ -48,7 +49,8 @@ export default class AuthController {
 		}
 
 		const user = new User();
-		user.fullname = fullname;
+		user.firstname = firstname;
+		user.lastname = lastname;
 		user.email = email;
 		user.passwordHash = await bcryptHash(password);
 		user.phoneNumber = phoneNumber;
@@ -61,8 +63,6 @@ export default class AuthController {
 			TokenTypes.VERIFY_EMAIL_TOKEN,
 			verifyEmailOrPhoneNumberExpirationSeconds
 		);
-
-		console.log("token", token);
 
 		await tokenRepository.save(token);
 		let message = "";
@@ -80,15 +80,12 @@ export default class AuthController {
 
 			try {
 				const result = await sendSMSApi(phoneNumber, OTP.token);
-				console.log("result", result);
 				const data = await result.json();
 				if (!result.status?.toString().startsWith("2")) {
 					throw new SMSSendingError(data.message);
 				}
-				console.log("data", data);
 				await tokenRepository.save(OTP);
 			} catch (error) {
-				console.log("error", error);
 				throw new SMSSendingError(error.message);
 			}
 			// await sendSMS(user.phoneNumber, token.token);
@@ -127,7 +124,6 @@ export default class AuthController {
 				// const smsResponse = sendSMS(user.phoneNumber, verificationToken.token);
 				// console.log("message", smsResponse);
 				const result = await sendSMSApi(phoneNumber, verificationToken.token);
-				console.log("result", result);
 				const data = await result.json();
 				if (!result.status?.toString().startsWith("2")) {
 					throw new SMSSendingError(data.message);
@@ -174,9 +170,9 @@ export default class AuthController {
 			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
 		});
 
-		// if (oldRefreshToken) {
-		// 	await tokenRepository.remove(oldRefreshToken);
-		// }
+		if (oldRefreshToken) {
+			await tokenRepository.remove(oldRefreshToken);
+		}
 
 		await tokenRepository.save(refreshToken);
 		user.passwordHash = undefined;
@@ -223,7 +219,6 @@ export default class AuthController {
 
 	verifyEmailOrPhoneNumber = catchAsync(async (req: Request, res: Response) => {
 		const { email, phoneNumber, token } = req.query;
-		console.log("query", req.query);
 
 		const user = await userRepository.findOne({
 			where: [
@@ -265,26 +260,48 @@ export default class AuthController {
 					"Email verification token expired, check your email for new token";
 			} else if (phoneNumber) {
 				const result = await sendSMSApi(phoneNumber as string, newToken.token);
-				console.log("result", result);
 				const data = await result.json();
 				if (!result.status?.toString().startsWith("2")) {
 					throw new SMSSendingError(data.message);
 				}
-				// const smsResponse = await sendSMS(user.phoneNumber, newToken.token);
-				// console.log("message", smsResponse);
 				message =
 					"Phone number verification OPT expired, check your phone for new one";
 			}
 			throw new BadRequest(message);
 		}
 
-		// await tokenRepository.remove(verificationToken);
-
 		user.isEmailVerified = true;
 
-		await userRepository.save(user);
+		const authToken = generateJWTToken(user);
 
-		res.status(200).json(new CustomResponse(true, "Verification successful"));
+		const refreshToken = new Token();
+		refreshToken.token = authToken.refreshToken;
+		refreshToken.user = user;
+		refreshToken.expirationDate = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000
+		); // 7 days
+		refreshToken.type = TokenTypes.REFRESH_TOKEN;
+
+		// todo: we have to remove the previous refresh token
+		const oldRefreshToken = await tokenRepository.findOne({
+			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
+		});
+
+		if (oldRefreshToken) {
+			await tokenRepository.remove(oldRefreshToken);
+		}
+
+		await tokenRepository.save(refreshToken);
+
+		await userRepository.save(user);
+		user.passwordHash = undefined;
+
+		res.status(200).json(
+			new CustomResponse(true, "Verification successful", {
+				user,
+				...authToken,
+			})
+		);
 	});
 
 	forgotPassword = catchAsync(async (req: Request, res: Response) => {
@@ -322,11 +339,6 @@ export default class AuthController {
 				if (!result.status?.toString().startsWith("2")) {
 					throw new SMSSendingError(data.message);
 				}
-				// const smsResponse = await sendSMS(
-				// 	user.phoneNumber,
-				// 	resetPasswordToken.token
-				// );
-				// console.log("message", smsResponse);
 				message =
 					"Phone number is not verified, please check your phone for verification OTP";
 			}
@@ -350,13 +362,10 @@ export default class AuthController {
 			message = "Password reset OTP sent successfully to your email";
 		} else if (phoneNumber) {
 			const result = await sendSMSApi(phoneNumber as string, token.token);
-			console.log("result", result);
 			const data = await result.json();
 			if (!result.status?.toString().startsWith("2")) {
 				throw new SMSSendingError(data.message);
 			}
-			// const smsResponse = await sendSMS(user.phoneNumber, token.token);
-			// console.log("message", smsResponse);
 			message = "Password reset OTP sent successfully to your phone number";
 		}
 		user.passwordHash = undefined;
@@ -398,14 +407,33 @@ export default class AuthController {
 
 		user.passwordHash = await bcryptHash(password);
 
-		await userRepository.save(user);
-
-		// await tokenRepository.remove(resetToken);
-
 		const authToken = generateJWTToken(user);
+
+		const refreshToken = new Token();
+		refreshToken.token = authToken.refreshToken;
+		refreshToken.user = user;
+		refreshToken.expirationDate = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000
+		); // 7 days
+		refreshToken.type = TokenTypes.REFRESH_TOKEN;
+
+		// todo: we have to remove the previous refresh token
+		const oldRefreshToken = await tokenRepository.findOne({
+			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
+		});
+
+		if (oldRefreshToken) {
+			await tokenRepository.remove(oldRefreshToken);
+		}
+
+		await tokenRepository.save(refreshToken);
+
+		await userRepository.save(user);
+		user.passwordHash = undefined;
 
 		res.status(200).json(
 			new CustomResponse(true, "Password reset successfully", {
+				user,
 				...authToken,
 			})
 		);
