@@ -32,7 +32,8 @@ const googleStrategy = new GoogleStrategy(
 
 			user = new User();
 			user.email = profile._json.email;
-			user.fullname = profile._json.name;
+			user.firstname = profile._json.given_name;
+			user.lastname = profile._json.family_name;
 			user.phoneNumber = profile._json.sub;
 			await userRepository.save(user);
 			console.log("done with user", user);

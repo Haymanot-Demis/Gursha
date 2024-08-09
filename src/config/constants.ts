@@ -8,3 +8,10 @@ export enum TokenTypes {
 	RESET_PASSWORD_TOKEN = "resetPassword",
 	VERIFY_EMAIL_TOKEN = "verifyEmail",
 }
+
+export enum validationSource {
+	BODY = "body",
+	HEADER = "headers",
+	PARAM = "params",
+	QUERY = "query",
+}
