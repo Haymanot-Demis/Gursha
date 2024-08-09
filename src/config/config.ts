@@ -26,21 +26,17 @@ export const SALT: number = +envVars.SALT;
 export const JWT_SECRET = envVars.JWT_SECRET;
 export const SESSION_SECRET = envVars.SESSION_SECRET;
 
-export const {
-	TWILIO_ACCOUNT_SID = "",
-	TWILIO_AUTH_TOKEN = "",
-	TWILIO_PHONE_NUMBER = "",
-} = envVars;
+export const TWILIO_ACCOUNT_SID = envVars.TWILIO_ACCOUNT_SID;
+export const TWILIO_AUTH_TOKEN = envVars.TWILIO_AUTH_TOKEN;
+export const TWILIO_PHONE_NUMBER = envVars.TWILIO_PHONE_NUMBER;
 
 export const SMS_API = envVars.SMS_API;
 export const SMS_AID = envVars.SMS_AID;
 export const SMS_KEY = envVars.SMS_KEY;
 
-export const {
-	GOOGLE_CLIENT_ID = "",
-	GOOGLE_CLIENT_SECRET = "",
-	GOOGLE_CALLBACK_URL,
-} = envVars;
+export const GOOGLE_CLIENT_ID = envVars.GOOGLE_CLIENT_ID;
+export const GOOGLE_CLIENT_SECRET = envVars.GOOGLE_CLIENT_SECRET;
+export const GOOGLE_CALLBACK_URL = envVars.GOOGLE_CALLBACK_URL;
 
 export const accessExpirationSeconds = +envVars.JWT_ACCESS_EXPIRATION;
 export const refreshExpirationSeconds = +envVars.JWT_REFRESH_EXPIRATION;
