@@ -24,6 +24,9 @@ const googleStrategy = new GoogleStrategy(
 			});
 
 			if (user) {
+				console.log("user found", user);
+				user.passwordHash = undefined;
+
 				return done(null, user);
 			}
 
@@ -31,24 +34,15 @@ const googleStrategy = new GoogleStrategy(
 			user.email = profile._json.email;
 			user.fullname = profile._json.name;
 			user.phoneNumber = profile._json.sub;
+			await userRepository.save(user);
+			console.log("done with user", user);
+			user.passwordHash = undefined;
+
+			return done(null, user);
 		} catch (err) {
 			console.log("Error finding user", err);
 			return done(err, null);
 		}
-
-		if (user) {
-			return done(null, user);
-		}
-
-		user = new User();
-		user.email = profile._json.email;
-		user.fullname = profile._json.name;
-
-		await userRepository.save(user);
-
-		console.log("done with user", user);
-
-		return done(null, user);
 	}
 );
 
