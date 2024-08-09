@@ -12,7 +12,10 @@ export default class User implements IUser {
 	id: string;
 
 	@Column({ nullable: false })
-	fullname: string;
+	firstname: string;
+
+	@Column({ nullable: false })
+	lastname: string;
 
 	@Column({ nullable: true, unique: true })
 	email: string;
