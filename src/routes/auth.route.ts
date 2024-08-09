@@ -2,6 +2,12 @@ import { Router } from "express";
 import AuthController from "../controllers/auth.controller";
 import { authenticate } from "../middlewares/auth";
 import passport from "passport";
+import User from "../models/user/model";
+import { generateJWTToken } from "../utils/auth";
+import Token from "../models/verificationCode/model";
+import { TokenTypes } from "../config/constants";
+import tokenRepository from "../repositories/token.repository";
+import { CustomResponse } from "../config/response";
 
 const router = Router();
 const authController = new AuthController();
@@ -21,9 +27,30 @@ router.get(
 	passport.authenticate("google", {
 		failureRedirect: "/api/v1/auth/google/error",
 	}),
-	(req, res) => {
+	async (req, res) => {
 		console.log("req.user", req.user);
-		res.send("Logged in successfully");
+		const user = req.user as User;
+		const token = generateJWTToken(user);
+
+		const refreshToken = new Token();
+		refreshToken.token = token.refreshToken;
+		refreshToken.user = user;
+		refreshToken.expirationDate = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000
+		); // 7 days
+		refreshToken.type = TokenTypes.REFRESH_TOKEN;
+
+		// todo: we have to remove the previous refresh token
+		const oldRefreshToken = await tokenRepository.findOne({
+			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
+		});
+
+		await tokenRepository.save(refreshToken);
+		user.passwordHash = undefined;
+
+		res
+			.status(200)
+			.json(new CustomResponse(true, "Login successful", { ...token, user }));
 	}
 );
 
