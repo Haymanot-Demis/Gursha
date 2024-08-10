@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "./../config/extended.express";
 import { CustomResponse } from "../config/response";
 import User from "../models/user/model";
-import { generateOTP, generateToken } from "../utils/otpGenerator";
+import { generateToken } from "../utils/otpGenerator";
 import {
 	AccountNotVerifiedError,
 	BadRequest,
@@ -9,7 +9,6 @@ import {
 	ResourceNotFoundError,
 	SMSSendingError,
 	unauthunticatedError,
-	UnknownError,
 } from "../utils/error";
 import userRepository from "../repositories/user.repository";
 import {
@@ -26,10 +25,9 @@ import {
 import Token from "../models/verificationCode/model";
 import { TokenTypes } from "../config/constants";
 import tokenRepository from "../repositories/token.repository";
-import { sendSMS, sendSMSApi } from "../services/twilio.sms.service";
+import { sendSMSApi } from "../services/sms.service";
 import {
 	resetPasswordExpirationSeconds,
-	SMS_API,
 	verifyEmailOrPhoneNumberExpirationSeconds,
 } from "../config/config";
 
@@ -57,7 +55,6 @@ export default class AuthController {
 
 		await userRepository.save(user);
 
-		console.log(user);
 		const token = generateToken(
 			user,
 			TokenTypes.VERIFY_EMAIL_TOKEN,
