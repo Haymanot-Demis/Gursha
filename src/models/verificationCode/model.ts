@@ -24,7 +24,11 @@ export default class Token implements IToken {
 	@ManyToOne(() => User, { onDelete: "CASCADE" })
 	user: User;
 
-	@Column({ enum: TokenTypes, default: TokenTypes.VERIFY_EMAIL_TOKEN })
+	@Column({
+		type: "enum",
+		enum: TokenTypes,
+		default: TokenTypes.VERIFY_EMAIL_TOKEN,
+	})
 	type: string;
 
 	@CreateDateColumn()
