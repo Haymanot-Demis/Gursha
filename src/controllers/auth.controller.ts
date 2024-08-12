@@ -33,8 +33,15 @@ import {
 
 export default class AuthController {
 	register = catchAsync(async (req: Request, res: Response) => {
-		const { firstname, lastname, email, password, phoneNumber, isMobile } =
-			req.body;
+		const {
+			firstname,
+			lastname,
+			email,
+			password,
+			phoneNumber,
+			role,
+			isMobile,
+		} = req.body;
 
 		const userExist = await userRepository.findOne({
 			where: [{ email }, { phoneNumber }],
@@ -52,6 +59,7 @@ export default class AuthController {
 		user.email = email;
 		user.passwordHash = await bcryptHash(password);
 		user.phoneNumber = phoneNumber;
+		user.role = role;
 
 		await userRepository.save(user);
 
