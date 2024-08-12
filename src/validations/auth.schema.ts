@@ -4,6 +4,7 @@ import {
 	phoneNumberRegExErrorMessage,
 	strongPasswordErrorMessage,
 } from "./common/joiErroroMessages";
+import { Role } from "../config/constants";
 
 const InvalidCredentials = "Invalid email or password";
 export const authScema = {
@@ -20,6 +21,7 @@ export const authScema = {
 		phoneNumber: Joi.string()
 			.pattern(phoneNumberRegEx)
 			.messages(phoneNumberRegExErrorMessage),
+		role: Joi.string().required().valid(Role.CLIENT, Role.MERCHANT),
 	}).or("email", "phoneNumber"),
 	login: Joi.object({
 		email: Joi.string().email(),
