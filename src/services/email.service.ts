@@ -36,17 +36,9 @@ export const sendMail = async (credentials: any) => {
 
 export const sendVerificationEmail = async (
 	user: User,
-	isFromMobileApp: boolean = false
+	token: Token,
+	isFromMobileApp: boolean = true
 ) => {
-	// Generate token
-	const token = new Token();
-	token.token = generateOTP(6);
-	token.user = user;
-	token.expirationDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-	token.type = TokenTypes.VERIFY_EMAIL_TOKEN;
-
-	await tokenRepository.save(token);
-
 	// Send email
 	const credentials = {
 		intent: "Email Verification Request",

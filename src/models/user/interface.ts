@@ -2,7 +2,8 @@ import { Role } from "../../config/constants";
 import Base from "../baseModel/interface";
 
 export default interface IUser extends Base {
-	fullname: string;
+	firstname: string;
+	lastname: string;
 	email: string;
 	passwordHash: string;
 	phoneNumber: string;

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "./../config/extended.express";
 import { verifyJWTToken } from "../utils/auth";
 import userRepository from "../repositories/user.repository";
 import { ResourceNotFoundError } from "../utils/error";
@@ -23,7 +23,6 @@ const authenticate = async (
 		});
 		if (!user) throw new ResourceNotFoundError(`User not found`);
 
-		// @ts-ignore
 		req.user = user;
 		next();
 	} catch (err) {
@@ -33,7 +32,6 @@ const authenticate = async (
 
 const authRole = (roles: string[]) => {
 	return (req: Request, res: Response, next: NextFunction) => {
-		// @ts-ignore
 		if (!roles.includes(req.user.role))
 			return res.status(403).send("Unauthorized");
 		next();

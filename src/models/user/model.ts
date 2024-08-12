@@ -12,15 +12,18 @@ export default class User implements IUser {
 	id: string;
 
 	@Column({ nullable: false })
-	fullname: string;
+	firstname: string;
 
-	@Column({ nullable: false, unique: true })
+	@Column({ nullable: false })
+	lastname: string;
+
+	@Column({ nullable: true, unique: true })
 	email: string;
 
 	@Column({ nullable: false })
 	passwordHash: string;
 
-	@Column({ nullable: true })
+	@Column({ nullable: true, unique: true })
 	phoneNumber: string;
 
 	@Column({ default: false })
@@ -35,7 +38,7 @@ export default class User implements IUser {
 	@Column({ default: 0 })
 	failedLoginAttempts: number;
 
-	@Column({ enum: Role, default: Role.CLIENT })
+	@Column({ type: "enum", enum: Role, default: Role.CLIENT })
 	role: Role;
 
 	@CreateDateColumn()

@@ -1,11 +1,13 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "./../config/extended.express";
 import { CustomResponse } from "../config/response";
 import User from "../models/user/model";
-import { generateOTP } from "../utils/otpGenerator";
+import { generateToken } from "../utils/otpGenerator";
 import {
 	AccountNotVerifiedError,
 	BadRequest,
+	ResourceAlreadyExistsError,
 	ResourceNotFoundError,
+	SMSSendingError,
 	unauthunticatedError,
 } from "../utils/error";
 import userRepository from "../repositories/user.repository";
@@ -23,60 +25,120 @@ import {
 import Token from "../models/verificationCode/model";
 import { TokenTypes } from "../config/constants";
 import tokenRepository from "../repositories/token.repository";
-import { string } from "joi";
+import { sendSMSApi } from "../services/sms.service";
+import {
+	resetPasswordExpirationSeconds,
+	verifyEmailOrPhoneNumberExpirationSeconds,
+} from "../config/config";
 
 export default class AuthController {
 	register = catchAsync(async (req: Request, res: Response) => {
-		const { fullname, email, password, phoneNumber, isMobile } = req.body;
+		const {
+			firstname,
+			lastname,
+			email,
+			password,
+			phoneNumber,
+			role,
+			isMobile,
+		} = req.body;
 
-		const userExist = await userRepository.findOne({ where: { email } });
+		const userExist = await userRepository.findOne({
+			where: [{ email }, { phoneNumber }],
+		});
 
 		if (userExist) {
-			throw new BadRequest("Email already exist, please login");
+			throw new ResourceAlreadyExistsError(
+				"Email or phone number  already exist"
+			);
 		}
 
 		const user = new User();
-		user.fullname = fullname;
+		user.firstname = firstname;
+		user.lastname = lastname;
 		user.email = email;
 		user.passwordHash = await bcryptHash(password);
 		user.phoneNumber = phoneNumber;
+		user.role = role;
 
 		await userRepository.save(user);
 
-		console.log(user);
+		const token = generateToken(
+			user,
+			TokenTypes.VERIFY_EMAIL_TOKEN,
+			verifyEmailOrPhoneNumberExpirationSeconds
+		);
 
-		// sendSMS(user.phoneNumber, `OTP: ${generatePIN()}`);
+		await tokenRepository.save(token);
+		let message = "";
+		if (email) {
+			// send verification email
+			await sendVerificationEmail(user, token);
+			message =
+				"Registration successful, check your email for verification token";
+		} else if (phoneNumber) {
+			const OTP = generateToken(
+				user,
+				TokenTypes.VERIFY_EMAIL_TOKEN,
+				verifyEmailOrPhoneNumberExpirationSeconds
+			);
 
-		// send verification email
-		await sendVerificationEmail(user, isMobile);
+			try {
+				const result = await sendSMSApi(phoneNumber, OTP.token);
+				const data = await result.json();
+				if (!result.status?.toString().startsWith("2")) {
+					throw new SMSSendingError(data.message);
+				}
+				await tokenRepository.save(OTP);
+			} catch (error) {
+				throw new SMSSendingError(error.message);
+			}
+			// await sendSMS(user.phoneNumber, token.token);
+			message =
+				"Registration successful, we sent you a verification token to your mobile number";
+		}
+
 		user.passwordHash = undefined;
 
-		res
-			.status(201)
-			.json(
-				new CustomResponse(
-					true,
-					"Registered successfully, please check your email for verification",
-					user
-				)
-			);
+		res.status(201).json(new CustomResponse(true, message, user));
 	});
 
 	login = catchAsync(async (req: Request, res: Response) => {
-		const { email, password } = req.body;
+		const { email, phoneNumber, password } = req.body;
 
-		const user = await userRepository.findOne({ where: { email } });
+		const user = await userRepository.findOne({
+			where: [{ email }, { phoneNumber }],
+		});
 
 		if (!user) {
-			throw new ResourceNotFoundError("User not found");
+			throw new ResourceNotFoundError("Invalid credentials");
 		}
 
 		if (!user.isEmailVerified) {
-			// todo: resend verification email
-			await sendVerificationEmail(user);
-			throw new AccountNotVerifiedError(
-				"Email is not verified, please check your email for verification token or link"
+			const verificationToken = generateToken(
+				user,
+				TokenTypes.VERIFY_EMAIL_TOKEN,
+				verifyEmailOrPhoneNumberExpirationSeconds
 			);
+			// resend verification email
+			let message = "";
+			if (email) {
+				await sendVerificationEmail(user, verificationToken);
+				message = "Email is not verified, please check your email";
+			} else if (phoneNumber) {
+				// const smsResponse = sendSMS(user.phoneNumber, verificationToken.token);
+				// console.log("message", smsResponse);
+				const result = await sendSMSApi(phoneNumber, verificationToken.token);
+				const data = await result.json();
+				if (!result.status?.toString().startsWith("2")) {
+					throw new SMSSendingError(data.message);
+				}
+				message = "Email is not verified, please check your phone for OTP";
+			}
+
+			await tokenRepository.save(verificationToken);
+
+			throw new AccountNotVerifiedError(message);
 		}
 
 		// if (!user.isAccountActive) {
@@ -151,6 +213,7 @@ export default class AuthController {
 
 		await tokenRepository.save(newRefreshToken);
 		await tokenRepository.remove(refreshTokenExist);
+		refreshTokenExist.user.passwordHash = undefined;
 
 		return res.status(200).json({
 			...token,
@@ -159,11 +222,14 @@ export default class AuthController {
 		});
 	});
 
-	verifyEmail = catchAsync(async (req: Request, res: Response) => {
-		const { email, token } = req.query;
+	verifyEmailOrPhoneNumber = catchAsync(async (req: Request, res: Response) => {
+		const { email, phoneNumber, token } = req.query;
 
 		const user = await userRepository.findOne({
-			where: { email: email as string },
+			where: [
+				{ email: email as string },
+				{ phoneNumber: phoneNumber as string },
+			],
 		});
 
 		if (!user) {
@@ -187,28 +253,70 @@ export default class AuthController {
 		}
 
 		if (verificationToken.expirationDate < new Date()) {
-			await sendVerificationEmail(user);
-			throw new BadRequest(
-				"Token is expired, please check your email for new token"
+			const newToken = generateToken(
+				user,
+				TokenTypes.VERIFY_EMAIL_TOKEN,
+				verifyEmailOrPhoneNumberExpirationSeconds
 			);
+			let message = "";
+			if (email) {
+				await sendVerificationEmail(user, newToken);
+				message =
+					"Email verification token expired, check your email for new token";
+			} else if (phoneNumber) {
+				const result = await sendSMSApi(phoneNumber as string, newToken.token);
+				const data = await result.json();
+				if (!result.status?.toString().startsWith("2")) {
+					throw new SMSSendingError(data.message);
+				}
+				message =
+					"Phone number verification OPT expired, check your phone for new one";
+			}
+			throw new BadRequest(message);
 		}
-
-		await tokenRepository.remove(verificationToken);
 
 		user.isEmailVerified = true;
 
-		await userRepository.save(user);
+		const authToken = generateJWTToken(user);
 
-		res
-			.status(200)
-			.json(new CustomResponse(true, "Email verified successfully"));
+		const refreshToken = new Token();
+		refreshToken.token = authToken.refreshToken;
+		refreshToken.user = user;
+		refreshToken.expirationDate = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000
+		); // 7 days
+		refreshToken.type = TokenTypes.REFRESH_TOKEN;
+
+		// todo: we have to remove the previous refresh token
+		const oldRefreshToken = await tokenRepository.findOne({
+			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
+		});
+
+		if (oldRefreshToken) {
+			await tokenRepository.remove(oldRefreshToken);
+		}
+
+		await tokenRepository.save(refreshToken);
+
+		await userRepository.save(user);
+		user.passwordHash = undefined;
+
+		res.status(200).json(
+			new CustomResponse(true, "Verification successful", {
+				user,
+				...authToken,
+			})
+		);
 	});
 
 	forgotPassword = catchAsync(async (req: Request, res: Response) => {
-		const { email } = req.query;
+		const { email, phoneNumber } = req.query;
 
 		const user = await userRepository.findOne({
-			where: { email: email as string },
+			where: [
+				{ email: email as string },
+				{ phoneNumber: phoneNumber as string },
+			],
 		});
 
 		if (!user) {
@@ -216,34 +324,70 @@ export default class AuthController {
 		}
 
 		if (!user.isEmailVerified) {
-			await sendVerificationEmail(user);
-			throw new AccountNotVerifiedError(
-				"Email is not verified, please check your email for verification token or link"
+			const verificationToken = generateToken(
+				user,
+				TokenTypes.RESET_PASSWORD_TOKEN,
+				resetPasswordExpirationSeconds
 			);
+			let message = "";
+			if (email) {
+				await sendVerificationEmail(user, verificationToken);
+				message =
+					"Email is not verified, please check your email for verification token";
+			} else if (phoneNumber) {
+				const result = await sendSMSApi(
+					phoneNumber as string,
+					verificationToken.token
+				);
+				console.log("result", result);
+				const data = await result.json();
+				if (!result.status?.toString().startsWith("2")) {
+					throw new SMSSendingError(data.message);
+				}
+				message =
+					"Phone number is not verified, please check your phone for verification OTP";
+			}
+
+			await tokenRepository.save(verificationToken);
+
+			throw new AccountNotVerifiedError(message);
 		}
 
-		const token = new Token();
-		token.token = generateOTP(6);
-		token.user = user;
-		token.expirationDate = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-		token.type = TokenTypes.RESET_PASSWORD_TOKEN;
+		const token = generateToken(
+			user,
+			TokenTypes.RESET_PASSWORD_TOKEN,
+			resetPasswordExpirationSeconds
+		);
 
 		await tokenRepository.save(token);
 
-		await sendPasswordResetEmail(user, token);
+		let message = "";
+		if (email) {
+			await sendPasswordResetEmail(user, token);
+			message = "Password reset OTP sent successfully to your email";
+		} else if (phoneNumber) {
+			const result = await sendSMSApi(phoneNumber as string, token.token);
+			const data = await result.json();
+			if (!result.status?.toString().startsWith("2")) {
+				throw new SMSSendingError(data.message);
+			}
+			message = "Password reset OTP sent successfully to your phone number";
+		}
+		user.passwordHash = undefined;
 
 		res.status(200).json(
-			new CustomResponse(true, "Password reset email sent successfully", {
+			new CustomResponse(true, message, {
 				user,
 			})
 		);
 	});
 
 	resetPassword = catchAsync(async (req: Request, res: Response) => {
-		const { email, token, password } = req.body;
+		const { email, phoneNumber, token, password } = req.body;
+		console.log("req.body", req.body);
 
 		const user = await userRepository.findOne({
-			where: { email },
+			where: [{ email }, { phoneNumber }],
 		});
 
 		if (!user) {
@@ -268,14 +412,33 @@ export default class AuthController {
 
 		user.passwordHash = await bcryptHash(password);
 
-		await userRepository.save(user);
-
-		await tokenRepository.remove(resetToken);
-
 		const authToken = generateJWTToken(user);
+
+		const refreshToken = new Token();
+		refreshToken.token = authToken.refreshToken;
+		refreshToken.user = user;
+		refreshToken.expirationDate = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000
+		); // 7 days
+		refreshToken.type = TokenTypes.REFRESH_TOKEN;
+
+		// todo: we have to remove the previous refresh token
+		const oldRefreshToken = await tokenRepository.findOne({
+			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
+		});
+
+		if (oldRefreshToken) {
+			await tokenRepository.remove(oldRefreshToken);
+		}
+
+		await tokenRepository.save(refreshToken);
+
+		await userRepository.save(user);
+		user.passwordHash = undefined;
 
 		res.status(200).json(
 			new CustomResponse(true, "Password reset successfully", {
+				user,
 				...authToken,
 			})
 		);
@@ -284,7 +447,6 @@ export default class AuthController {
 	changePassword = catchAsync(async (req: Request, res: Response) => {
 		const { oldPassword, newPassword } = req.body;
 
-		// @ts-ignore
 		const user = await userRepository.findOne({ where: { id: req.user.id } });
 
 		if (!user) {
@@ -314,7 +476,7 @@ export default class AuthController {
 		if (!user) {
 			throw new ResourceNotFoundError("User not found");
 		}
-    
+
 		user.failedLoginAttempts = 0;
 		user.isAccountLocked = false;
 

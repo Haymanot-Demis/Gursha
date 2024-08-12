@@ -13,6 +13,8 @@ enum ErrorType {
 	UNKNOWN_ERROR = "Unknown_Error",
 	RESOURCE_ALREADY_EXISTS_ERROR = "Resource_Already_Exists_Error",
 	BAD_REQUEST_ERROR = "Resource_Already_Exists_Error",
+	SMS_SENDING_ERROR = "SMS_Sending_Error",
+	VALIDATION_ERROR = "Validation_Error",
 }
 
 export abstract class CustomError extends Error {
@@ -126,5 +128,32 @@ export class BadRequest extends CustomError {
 	constructor(public message: string) {
 		super(message);
 		this.name = ErrorType.BAD_REQUEST_ERROR;
+	}
+}
+
+export class EmailSendingError extends CustomError {
+	statusCode = 400;
+
+	constructor(public message: string) {
+		super(message);
+		this.name = ErrorType.EMAIL_SENDING_ERROR;
+	}
+}
+
+export class SMSSendingError extends CustomError {
+	statusCode = 400;
+
+	constructor(public message: string) {
+		super(message);
+		this.name = ErrorType.SMS_SENDING_ERROR;
+	}
+}
+
+export class ValidationError extends CustomError {
+	statusCode = 422;
+
+	constructor(public message: string) {
+		super(message);
+		this.name = ErrorType.VALIDATION_ERROR;
 	}
 }
