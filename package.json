@@ -6,7 +6,12 @@
 	"scripts": {
 		"test": "jest",
 		"dev": "nodemon src/server.ts",
-		"start": "ts-node src/server.ts"
+		"start": "ts-node src/server.ts",
+		"typeorm": "typeorm-ts-node-commonjs",
+		"migration:run": "npm run typeorm -- migration:run --dataSource=src/common/config/data-source.ts",
+		"migration:revert": "npm run typeorm -- migration:revert --dataSource=src/common/config/data-source.ts",
+		"migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -d=src/common/config/data-source src/migration/latest",
+		"migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create"
 	},
 	"author": "",
 	"license": "ISC",

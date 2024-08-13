@@ -1,6 +1,6 @@
 import app from "./app";
-import { APP_PORT } from "./config/config";
-import { appDataSource } from "./config/app.datasource";
+import { APP_PORT } from "./common/config/config";
+import { appDataSource } from "./common/config/data-source";
 
 const main = async () => {
 	try {

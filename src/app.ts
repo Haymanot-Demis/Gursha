@@ -6,12 +6,12 @@ import {
 	googleStrategy,
 	serializeUser,
 	deserializeUser,
-} from "./middlewares/passport.google.strategy";
-import * as envVars from "./config/config";
+} from "./common/middlewares/passport.google.strategy";
+import * as envVars from "./common/config/config";
 
 import routes from "./routes";
 
-import { errorHandler } from "./middlewares/errorHandler";
+import { errorHandler } from "./common/middlewares/errorHandler";
 
 const app = express();
 
