@@ -34,6 +34,10 @@ import {
 	resetPasswordExpirationSeconds,
 	verifyEmailOrPhoneNumberExpirationSeconds,
 } from "../common/config/config";
+import {
+	errorMessages,
+	successMessages,
+} from "../common/utils/serverResponseMessages";
 
 export default class AuthController {
 	register = catchAsync(async (req: Request, res: Response) => {
@@ -52,9 +56,10 @@ export default class AuthController {
 		});
 
 		if (userExist) {
-			throw new ResourceAlreadyExistsError(
-				"Email or phone number  already exist"
-			);
+			let errMessage = email
+				? errorMessages.emailAlreadyExists
+				: errorMessages.phoneNumberAlreadyExists;
+			throw new ResourceAlreadyExistsError(errMessage);
 		}
 
 		const user = new User();
@@ -77,8 +82,7 @@ export default class AuthController {
 		let message = "";
 		if (email) {
 			await sendVerificationEmail(user, token);
-			message =
-				"Registration successful, check your email for verification token";
+			message = successMessages.registrationWithEmailSuccessful;
 		} else if (phoneNumber) {
 			const OTP = generateToken(
 				user,
@@ -96,8 +100,7 @@ export default class AuthController {
 			} catch (error) {
 				throw new SMSSendingError(error.message);
 			}
-			message =
-				"Registration successful, we sent you a verification token to your mobile number";
+			message = successMessages.registrationWithPhoneSuccessful;
 		}
 
 		user.passwordHash = undefined;
@@ -113,7 +116,7 @@ export default class AuthController {
 		});
 
 		if (!user) {
-			throw new ResourceNotFoundError("Invalid credentials");
+			throw new ResourceNotFoundError(errorMessages.invalidCredentials);
 		}
 
 		if (!user.isEmailVerified) {
@@ -126,14 +129,14 @@ export default class AuthController {
 			let message = "";
 			if (email) {
 				await sendVerificationEmail(user, verificationToken);
-				message = "Email is not verified, please check your email";
+				message = errorMessages.emailNotVerified;
 			} else if (phoneNumber) {
 				const result = await sendSMSApi(phoneNumber, verificationToken.token);
 				const data = await result.json();
 				if (!result.status?.toString().startsWith("2")) {
 					throw new SMSSendingError(data.message);
 				}
-				message = "Email is not verified, please check your phone for OTP";
+				message = errorMessages.phoneNotVerified;
 			}
 
 			await tokenRepository.save(verificationToken);
@@ -142,9 +145,7 @@ export default class AuthController {
 		}
 
 		if (user.failedLoginAttempts > 3 || user.isAccountLocked) {
-			throw new unauthunticatedError(
-				"Account locked, due to multiple failed login attempts"
-			);
+			throw new unauthunticatedError(errorMessages.accountLocked);
 		}
 
 		const isMatch = await bcryptCompare(password, user.passwordHash);
@@ -153,7 +154,7 @@ export default class AuthController {
 			user.failedLoginAttempts += 1;
 			user.isAccountLocked = user.failedLoginAttempts >= 3;
 			await userRepository.save(user);
-			throw new unauthunticatedError("Invalid credentials");
+			throw new unauthunticatedError(errorMessages.invalidCredentials);
 		}
 
 		const token = generateJWTToken(user);
@@ -178,9 +179,12 @@ export default class AuthController {
 		await tokenRepository.save(refreshToken);
 		user.passwordHash = undefined;
 
-		res
-			.status(200)
-			.json(new CustomResponse(true, "Login successful", { ...token, user }));
+		res.status(200).json(
+			new CustomResponse(true, successMessages.loginSuccessful, {
+				...token,
+				user,
+			})
+		);
 	});
 
 	refreshToken = catchAsync(async (req: Request, res: Response) => {
@@ -192,7 +196,7 @@ export default class AuthController {
 		});
 
 		if (!refreshTokenExist) {
-			return res.status(404).json({ message: "Invalid refresh token" });
+			throw new ResourceNotFoundError(errorMessages.invalidRefreshToken);
 		}
 
 		verifyJWTToken(refreshTokenExist.token);
@@ -214,7 +218,7 @@ export default class AuthController {
 		return res.status(200).json({
 			...token,
 			user: refreshTokenExist.user,
-			message: "Refresh token created",
+			message: successMessages.refreshTokenCreated,
 		});
 	});
 
@@ -229,11 +233,11 @@ export default class AuthController {
 		});
 
 		if (!user) {
-			throw new ResourceNotFoundError("User not found");
+			throw new ResourceNotFoundError(errorMessages.userNotFound);
 		}
 
 		if (user.isEmailVerified) {
-			throw new BadRequest("Email already verified");
+			throw new BadRequest(errorMessages.emailAlreadyVerified);
 		}
 
 		const verificationToken = await tokenRepository.findOne({
@@ -245,7 +249,7 @@ export default class AuthController {
 		});
 
 		if (!verificationToken) {
-			throw new ResourceNotFoundError("Token not found");
+			throw new ResourceNotFoundError(errorMessages.tokenNotFound);
 		}
 
 		if (verificationToken.expirationDate < new Date()) {
@@ -257,16 +261,14 @@ export default class AuthController {
 			let message = "";
 			if (email) {
 				await sendVerificationEmail(user, newToken);
-				message =
-					"Email verification token expired, check your email for new token";
+				message = errorMessages.emailVerificationTokenExpired;
 			} else if (phoneNumber) {
 				const result = await sendSMSApi(phoneNumber as string, newToken.token);
 				const data = await result.json();
 				if (!result.status?.toString().startsWith("2")) {
 					throw new SMSSendingError(data.message);
 				}
-				message =
-					"Phone number verification OPT expired, check your phone for new one";
+				message = errorMessages.phoneVerificationTokenExpired;
 			}
 			throw new BadRequest(message);
 		}
@@ -298,7 +300,7 @@ export default class AuthController {
 		user.passwordHash = undefined;
 
 		res.status(200).json(
-			new CustomResponse(true, "Verification successful", {
+			new CustomResponse(true, successMessages.verificationSuccessful, {
 				user,
 				...authToken,
 			})
@@ -316,7 +318,7 @@ export default class AuthController {
 		});
 
 		if (!user) {
-			throw new ResourceNotFoundError("User not found");
+			throw new ResourceNotFoundError(errorMessages.userNotFound);
 		}
 
 		if (!user.isEmailVerified) {
@@ -328,8 +330,7 @@ export default class AuthController {
 			let message = "";
 			if (email) {
 				await sendVerificationEmail(user, verificationToken);
-				message =
-					"Email is not verified, please check your email for verification token";
+				message = errorMessages.emailNotVerified;
 			} else if (phoneNumber) {
 				const result = await sendSMSApi(
 					phoneNumber as string,
@@ -340,8 +341,7 @@ export default class AuthController {
 				if (!result.status?.toString().startsWith("2")) {
 					throw new SMSSendingError(data.message);
 				}
-				message =
-					"Phone number is not verified, please check your phone for verification OTP";
+				message = errorMessages.phoneNotVerified;
 			}
 
 			await tokenRepository.save(verificationToken);
@@ -360,14 +360,14 @@ export default class AuthController {
 		let message = "";
 		if (email) {
 			await sendPasswordResetEmail(user, token);
-			message = "Password reset OTP sent successfully to your email";
+			message = successMessages.passwordResetTokenSentToEmail;
 		} else if (phoneNumber) {
 			const result = await sendSMSApi(phoneNumber as string, token.token);
 			const data = await result.json();
 			if (!result.status?.toString().startsWith("2")) {
 				throw new SMSSendingError(data.message);
 			}
-			message = "Password reset OTP sent successfully to your phone number";
+			message = successMessages.passwordResetTokenSentToPhone;
 		}
 		user.passwordHash = undefined;
 
@@ -380,14 +380,13 @@ export default class AuthController {
 
 	resetPassword = catchAsync(async (req: Request, res: Response) => {
 		const { email, phoneNumber, token, password } = req.body;
-		console.log("req.body", req.body);
 
 		const user = await userRepository.findOne({
 			where: [{ email }, { phoneNumber }],
 		});
 
 		if (!user) {
-			throw new ResourceNotFoundError("User not found");
+			throw new ResourceNotFoundError(errorMessages.userNotFound);
 		}
 
 		const resetToken = await tokenRepository.findOne({
@@ -399,11 +398,11 @@ export default class AuthController {
 		});
 
 		if (!resetToken) {
-			throw new ResourceNotFoundError("Token not found");
+			throw new ResourceNotFoundError(errorMessages.tokenNotFound);
 		}
 
 		if (resetToken.expirationDate < new Date()) {
-			throw new BadRequest("Token is expired");
+			throw new BadRequest(errorMessages.passwordResetTokenExpired);
 		}
 
 		user.passwordHash = await bcryptHash(password);
@@ -433,7 +432,7 @@ export default class AuthController {
 		user.passwordHash = undefined;
 
 		res.status(200).json(
-			new CustomResponse(true, "Password reset successfully", {
+			new CustomResponse(true, successMessages.passwordResetSuccessful, {
 				user,
 				...authToken,
 			})
@@ -446,13 +445,13 @@ export default class AuthController {
 		const user = await userRepository.findOne({ where: { id: req.user.id } });
 
 		if (!user) {
-			throw new ResourceNotFoundError("User not found");
+			throw new ResourceNotFoundError(errorMessages.userNotFound);
 		}
 
 		const isValid = await bcryptCompare(oldPassword, user.passwordHash);
 
 		if (!isValid) {
-			throw new unauthunticatedError("Invalid credentials");
+			throw new unauthunticatedError(errorMessages.invalidCredentials);
 		}
 
 		user.passwordHash = await bcryptHash(newPassword);
@@ -461,7 +460,9 @@ export default class AuthController {
 
 		res
 			.status(200)
-			.json(new CustomResponse(true, "Password changed successfully"));
+			.json(
+				new CustomResponse(true, successMessages.passwordChangedSuccessfully)
+			);
 	});
 
 	unlock = catchAsync(async (req: Request, res: Response) => {
@@ -470,7 +471,7 @@ export default class AuthController {
 		const user = await userRepository.findOne({ where: {} });
 
 		if (!user) {
-			throw new ResourceNotFoundError("User not found");
+			throw new ResourceNotFoundError(errorMessages.userNotFound);
 		}
 
 		user.failedLoginAttempts = 0;

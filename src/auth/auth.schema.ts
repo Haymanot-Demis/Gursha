@@ -45,10 +45,7 @@ export const authScema = {
 		phoneNumber: Joi.string().pattern(phoneNumberRegEx),
 	})
 		.or("email", "phoneNumber")
-		.messages({
-			"string.pattern.base":
-				"Phone number must be in the format +251 9XX XXX XXX",
-		}),
+		.messages(phoneNumberRegExErrorMessage),
 	resetPassword: Joi.object({
 		email: Joi.string().email(),
 		phoneNumber: Joi.string()
