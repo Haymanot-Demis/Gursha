@@ -7,20 +7,26 @@ import {
 	serializeUser,
 	deserializeUser,
 } from "./common/middlewares/passport.google.strategy";
-import * as envVars from "./common/config/config";
+import rateLimiterMiddleware from "./common/middlewares/rateLimiter";
 
 import routes from "./routes";
 
 import { errorHandler } from "./common/middlewares/errorHandler";
+import { CORS_ORIGINS, SESSION_SECRET } from "./common/config/config";
 
 const app = express();
 
-app.use(cors());
+app.use(rateLimiterMiddleware);
+app.use(
+	cors({
+		origin: CORS_ORIGINS,
+	})
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
 	expressSession({
-		secret: envVars.SESSION_SECRET,
+		secret: SESSION_SECRET,
 		resave: false,
 		saveUninitialized: true,
 		cookie: { secure: false },
@@ -34,15 +40,6 @@ passport.deserializeUser(deserializeUser);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// decrypt the body data before passing it to the routes
-
-// app.use((req: Request, res: Response, next: NextFunction) => {
-// 	if (!req.path?.startsWith("/api/v1/crypto")) {
-// 		const { data } = req.body;
-// 		req.body = decrypt(data);
-// 	}
-// 	next();
-// });
 app.use("/api/v1", routes);
 app.use(errorHandler);
 

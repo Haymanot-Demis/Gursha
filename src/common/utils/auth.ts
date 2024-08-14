@@ -3,6 +3,7 @@ import User from "../../user/user.model";
 import { JWT_SECRET, SALT } from "../config/config";
 import bcrypt from "bcrypt";
 import { unauthunticatedError } from "./error";
+import { errorMessages } from "./serverResponseMessages";
 
 const generateJWTToken = (user: User) => {
 	const accessToken = jwt.sign(
@@ -24,7 +25,7 @@ const verifyJWTToken = (token: string) => {
 	try {
 		return jwt.verify(token, JWT_SECRET);
 	} catch (error) {
-		throw new unauthunticatedError("Invalid token");
+		throw new unauthunticatedError(errorMessages.invalidRefreshToken);
 	}
 };
 

@@ -7,6 +7,10 @@ import {
 	Response,
 	NextFunction,
 } from "../common/config/extended.express";
+import {
+	errorMessages,
+	successMessages,
+} from "../common/utils/serverResponseMessages";
 
 export default class UserController {
 	updateProfile = catchAsync(
@@ -17,7 +21,7 @@ export default class UserController {
 			});
 
 			if (!userProfile) {
-				throw new ResourceNotFoundError("User not found");
+				throw new ResourceNotFoundError(errorMessages.userNotFound);
 			}
 
 			const { firstname, lastname } = req.body;
@@ -30,7 +34,7 @@ export default class UserController {
 			userProfile.passwordHash = undefined;
 
 			res.status(200).json(
-				new CustomResponse(true, "Profile updated successfully", {
+				new CustomResponse(true, successMessages.updateProfileSuccessful, {
 					user: userProfile,
 				})
 			);

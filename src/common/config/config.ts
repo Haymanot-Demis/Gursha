@@ -41,3 +41,4 @@ export const verifyEmailOrPhoneNumberExpirationSeconds =
 	+envVars.VERIFY_EMAIL_PHONE_EXPIRATION;
 
 export const ENCRYPTION_KEY = envVars.ENCRYPTION_KEY;
+export const CORS_ORIGINS = envVars.CORS_ORIGINS || "*";
