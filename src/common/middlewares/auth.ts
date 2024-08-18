@@ -1,39 +1,46 @@
 import { Request, Response, NextFunction } from "../config/extended.express";
 import { verifyJWTToken } from "../utils/auth";
 import userRepository from "../../user/user.repository";
-import { ResourceNotFoundError } from "../utils/error";
+import {
+	ResourceNotFoundError,
+	UnauthorizedError,
+	unauthunticatedError,
+} from "../utils/error";
+import { errorMessages } from "../utils/serverResponseMessages";
+import { catchAsync } from "../utils/asyncHandler";
 
-const authenticate = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	const header = req.header("Authorization");
+const authenticate = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const header = req.header("Authorization");
 
-	if (!header) return res.status(401).send("No auth header");
+		if (!header)
+			throw new unauthunticatedError(errorMessages(res).unuthenticated);
 
-	const parts = header.split(" ");
-	if (parts.length !== 2) return res.status(401).send("No token provided");
-	const token = parts[1];
+		const parts = header.split(" ");
+		if (parts.length !== 2)
+			throw new unauthunticatedError(errorMessages(res).unuthenticated);
+		const token = parts[1];
 
-	try {
-		const decoded = verifyJWTToken(token);
+		const { decoded, error } = verifyJWTToken(token);
+
+		if (error)
+			throw new unauthunticatedError(errorMessages(res).invalidJWTToken);
+
 		const user = await userRepository.findOne({
 			where: { id: decoded.id },
 		});
-		if (!user) throw new ResourceNotFoundError(`User not found`);
+
+		if (!user) throw new ResourceNotFoundError(errorMessages(res).userNotFound);
 
 		req.user = user;
 		next();
-	} catch (err) {
-		res.status(401).send("Invalid token");
 	}
-};
+);
 
 const authRole = (roles: string[]) => {
-	return (req: Request, res: Response, next: NextFunction) => {
+	return async (req: Request, res: Response, next: NextFunction) => {
 		if (!roles.includes(req.user.role))
-			return res.status(403).send("Unauthorized");
+			next(new UnauthorizedError(errorMessages(res).unauthorized));
 		next();
 	};
 };

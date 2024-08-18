@@ -151,9 +151,11 @@ export class SMSSendingError extends CustomError {
 
 export class ValidationError extends CustomError {
 	statusCode = 422;
+	details: any;
 
-	constructor(public message: string) {
+	constructor(public message: string, details: any = null) {
 		super(message);
 		this.name = ErrorType.VALIDATION_ERROR;
+		this.details = details;
 	}
 }

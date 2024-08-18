@@ -16,8 +16,7 @@ export const validate = (
 				allowUnknown: true,
 			});
 			if (error) {
-				console.log(error);
-				throw new ValidationError(error.details[0].message);
+				throw new ValidationError(error.details[0].message, error.details);
 			} else {
 				next();
 			}

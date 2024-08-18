@@ -17,6 +17,6 @@ export const appDataSource: DataSource = new DataSource({
 	database: DB_NAME,
 	// url: DB_URL,
 	synchronize: true,
-	logging: true,
+	logging: false,
 	entities: ["src/**/*.model.ts"],
 });

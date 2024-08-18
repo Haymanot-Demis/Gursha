@@ -23,9 +23,11 @@ const generateJWTToken = (user: User) => {
 
 const verifyJWTToken = (token: string) => {
 	try {
-		return jwt.verify(token, JWT_SECRET);
+		return { decoded: jwt.verify(token, JWT_SECRET) };
 	} catch (error) {
-		throw new unauthunticatedError(errorMessages.invalidRefreshToken);
+		return {
+			error: new unauthunticatedError(""),
+		};
 	}
 };
 

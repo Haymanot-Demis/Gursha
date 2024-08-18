@@ -12,12 +12,12 @@ import { Role } from "../common/config/constants";
 const InvalidCredentials = "Invalid email or password";
 export const authScema = {
 	register: Joi.object({
-		firstname: Joi.string().required().min(3).max(30),
-		lastname: Joi.string().required().min(3).max(30),
+		firstName: Joi.string().required().min(3).max(30),
+		lastName: Joi.string().required().min(3).max(30),
 		email: Joi.string().email(),
 		password: Joi.string()
-			.min(6)
 			.required()
+			.min(6)
 			.max(30)
 			.pattern(passwordRegEx)
 			.messages(strongPasswordErrorMessage),
@@ -25,11 +25,15 @@ export const authScema = {
 			.pattern(phoneNumberRegEx)
 			.messages(phoneNumberRegExErrorMessage),
 		role: Joi.string().required().valid(Role.CLIENT, Role.MERCHANT),
-	}).or("email", "phoneNumber"),
+	})
+		.or("email", "phoneNumber")
+		.messages({
+			"object.missing": "Either email or phone number is required.",
+		}),
 	login: Joi.object({
 		email: Joi.string().email(),
 		phoneNumber: Joi.string().pattern(phoneNumberRegEx),
-		password: Joi.string().min(6).required().pattern(passwordRegEx),
+		password: Joi.string().required().min(6).max(30).pattern(passwordRegEx),
 	})
 		.or("email", "phoneNumber")
 		.messages({
@@ -42,10 +46,10 @@ export const authScema = {
 		}),
 	forgetPassword: Joi.object({
 		email: Joi.string().email(),
-		phoneNumber: Joi.string().pattern(phoneNumberRegEx),
-	})
-		.or("email", "phoneNumber")
-		.messages(phoneNumberRegExErrorMessage),
+		phoneNumber: Joi.string()
+			.pattern(phoneNumberRegEx)
+			.messages(phoneNumberRegExErrorMessage),
+	}).or("email", "phoneNumber"),
 	resetPassword: Joi.object({
 		email: Joi.string().email(),
 		phoneNumber: Joi.string()
@@ -53,8 +57,9 @@ export const authScema = {
 			.messages(phoneNumberRegExErrorMessage),
 		token: Joi.string().required().length(6),
 		password: Joi.string()
-			.min(6)
 			.required()
+			.min(6)
+			.max(30)
 			.pattern(passwordRegEx)
 			.messages(strongPasswordErrorMessage),
 	}).or("email", "phoneNumber"),
@@ -68,8 +73,9 @@ export const authScema = {
 	changePassword: Joi.object({
 		oldPassword: Joi.string().required().min(6),
 		newPassword: Joi.string()
-			.min(6)
 			.required()
+			.min(6)
+			.max(30)
 			.pattern(passwordRegEx)
 			.messages(strongPasswordErrorMessage),
 	}),
