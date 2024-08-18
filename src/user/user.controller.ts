@@ -21,20 +21,20 @@ export default class UserController {
 			});
 
 			if (!userProfile) {
-				throw new ResourceNotFoundError(errorMessages.userNotFound);
+				throw new ResourceNotFoundError(errorMessages(res).userNotFound);
 			}
 
-			const { firstname, lastname } = req.body;
+			const { firstName, lastName } = req.body;
 
-			userProfile.firstname = firstname;
-			userProfile.lastname = lastname;
+			userProfile.firstName = firstName;
+			userProfile.lastName = lastName;
 
 			await userRepository.save(userProfile);
 
 			userProfile.passwordHash = undefined;
 
 			res.status(200).json(
-				new CustomResponse(true, successMessages.updateProfileSuccessful, {
+				new CustomResponse(true, successMessages(res).updateProfileSuccessful, {
 					user: userProfile,
 				})
 			);

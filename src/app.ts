@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import expressSession from "express-session";
 import cors from "cors";
+import i18n from "./common/config/i18n";
 import {
 	googleStrategy,
 	serializeUser,
@@ -15,6 +16,15 @@ import { errorHandler } from "./common/middlewares/errorHandler";
 import { CORS_ORIGINS, SESSION_SECRET } from "./common/config/config";
 
 const app = express();
+app.use(i18n.init);
+
+app.use((req, res, next) => {
+	console.log("lang", req.query.lang);
+
+	// @ts-ignore
+	console.log("userNotFound", res.__("userNotFound"));
+	next();
+});
 
 app.use(rateLimiterMiddleware);
 app.use(

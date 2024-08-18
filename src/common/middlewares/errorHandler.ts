@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as customError from "../utils/error";
+import { CustomResponse } from "../config/response";
+import i18n from "../config/i18n";
 
 export function errorHandler(
 	err: Error,
@@ -11,8 +13,18 @@ export function errorHandler(
 	console.log("isInstance", err instanceof customError.CustomError);
 
 	if (err instanceof customError.CustomError) {
-		res.status(err.statusCode).json({ message: err.message });
+		if (err instanceof customError.ValidationError) {
+			console.log("details", err.details);
+			const { type } = err.details[0];
+			const { key } = err.details[0].context;
+
+			res
+				.status(err.statusCode)
+				.json(new CustomResponse(false, res.__(key)[type]));
+		} else {
+			res.status(err.statusCode).json(new CustomResponse(false, err.message));
+		}
 	} else {
-		res.status(500).json({ message: "Some thing went wrong" });
+		res.status(500).json(new CustomResponse(false, "Some thing went wrong"));
 	}
 }
