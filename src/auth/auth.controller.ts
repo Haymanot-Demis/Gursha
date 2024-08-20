@@ -39,6 +39,7 @@ import {
 	errorMessages,
 	successMessages,
 } from "../common/utils/serverResponseMessages";
+import logger from "../common/middlewares/logger";
 
 export default class AuthController {
 	register = catchAsync(async (req: Request, res: Response) => {
@@ -57,6 +58,7 @@ export default class AuthController {
 		});
 
 		if (userExist) {
+			logger.error("User already exists");
 			let errMessage = email
 				? errorMessages(res).emailAlreadyExists
 				: errorMessages(res).phoneNumberAlreadyExists;
