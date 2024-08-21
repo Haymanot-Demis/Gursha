@@ -42,3 +42,8 @@ export const verifyEmailOrPhoneNumberExpirationSeconds =
 
 export const ENCRYPTION_KEY = envVars.ENCRYPTION_KEY;
 export const CORS_ORIGINS = envVars.CORS_ORIGINS || "*";
+export const DEFAULT_PASSWORD = envVars.DEFAULT_PASSWORD;
+export const LOCK_ACCOUNT_DURATION = [
+	+envVars.LOCK_ACCOUNT_TIME,
+	+envVars.LOCK_ACCOUNT_TIME2,
+];

@@ -18,14 +18,6 @@ import { CORS_ORIGINS, SESSION_SECRET } from "./common/config/config";
 const app = express();
 app.use(i18n.init);
 
-app.use((req, res, next) => {
-	console.log("lang", req.query.lang);
-
-	// @ts-ignore
-	console.log("userNotFound", res.__("userNotFound"));
-	next();
-});
-
 app.use(rateLimiterMiddleware);
 app.use(
 	cors({
