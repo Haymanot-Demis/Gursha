@@ -8,7 +8,8 @@ export default interface IUser extends Base {
 	passwordHash: string;
 	phoneNumber: string;
 	isAccountLocked: boolean;
-	isAccountActive: boolean;
+	lockUntil: Date;
+	lockCount: number;
 	failedLoginAttempts: number;
 	role: Role;
 }
