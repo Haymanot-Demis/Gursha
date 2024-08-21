@@ -32,6 +32,7 @@ import { TokenTypes } from "../common/config/constants";
 import tokenRepository from "../token/token.repository";
 import { sendSMSApi } from "../common/services/sms.service";
 import {
+	LOCK_ACCOUNT_DURATION,
 	resetPasswordExpirationSeconds,
 	verifyEmailOrPhoneNumberExpirationSeconds,
 } from "../common/config/config";
@@ -147,7 +148,15 @@ export default class AuthController {
 			throw new AccountNotVerifiedError(message);
 		}
 
-		if (user.failedLoginAttempts > 3 || user.isAccountLocked) {
+		if (user.isAccountLocked) {
+			logger.error(`Account with email ${user.email} is locked`);
+			throw new unauthunticatedError(errorMessages(res).accountLocked);
+		}
+
+		if (user.lockUntil && user.lockUntil > new Date()) {
+			logger.error(
+				`Account with email ${user.email} is locked unitl ${user.lockUntil}`
+			);
 			throw new unauthunticatedError(errorMessages(res).accountLocked);
 		}
 
@@ -155,10 +164,38 @@ export default class AuthController {
 
 		if (!isMatch) {
 			user.failedLoginAttempts += 1;
-			user.isAccountLocked = user.failedLoginAttempts >= 3;
+
+			if (user.failedLoginAttempts >= 3) {
+				if (user.lockCount < 2) {
+					user.lockUntil = new Date(
+						Date.now() + LOCK_ACCOUNT_DURATION[user.lockCount] * 1000
+					);
+					user.lockCount += 1;
+					logger.error(
+						`Account with email ${user.email} is locked temporarily until ${user.lockUntil}`
+					);
+				} else {
+					logger.error(
+						`Account with email ${user.email} is locked permanently`
+					);
+					user.isAccountLocked = true;
+				}
+				logger.info("Reset failed login attempts");
+				user.failedLoginAttempts = 0;
+				logger.info("saving user with updated failed login attempts");
+				await userRepository.save(user);
+				throw new unauthunticatedError(errorMessages(res).accountLocked);
+			}
+
 			await userRepository.save(user);
 			throw new unauthunticatedError(errorMessages(res).invalidCredentials);
 		}
+
+		user.failedLoginAttempts = 0;
+		user.lockUntil = null;
+		user.lockCount = 0;
+		user.isAccountLocked = false;
+		await userRepository.save(user);
 
 		const token = generateJWTToken(user);
 

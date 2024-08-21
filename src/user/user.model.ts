@@ -27,16 +27,19 @@ export default class User implements IUser {
 	phoneNumber: string;
 
 	@Column({ default: false })
-	isAccountLocked: boolean;
-
-	@Column({ default: true })
-	isAccountActive: boolean;
+	isEmailVerified: boolean;
 
 	@Column({ default: false })
-	isEmailVerified: boolean;
+	isAccountLocked: boolean;
 
 	@Column({ default: 0 })
 	failedLoginAttempts: number;
+
+	@Column({ nullable: true })
+	lockUntil: Date;
+
+	@Column({ default: 0 })
+	lockCount: number;
 
 	@Column({ type: "enum", enum: Role, default: Role.CLIENT })
 	role: Role;
