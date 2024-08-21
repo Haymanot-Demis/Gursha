@@ -15,7 +15,7 @@ export default class Token implements IToken {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@Column()
+	@Column({ type: "varchar", length: 255 })
 	token: string;
 
 	@Column()

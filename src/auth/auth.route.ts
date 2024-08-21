@@ -10,6 +10,7 @@ import tokenRepository from "../token/token.repository";
 import { CustomResponse } from "../common/config/response";
 import { validate } from "../common/middlewares/validate";
 import { authScema } from "./auth.schema";
+import logger from "../common/middlewares/logger";
 
 const router = Router();
 const authController = new AuthController();
@@ -44,14 +45,19 @@ router.put(
 );
 router.put("/unlock", authController.unlock);
 
-router.get("/google", passport.authenticate("google"));
+router.get(
+	"/google",
+	passport.authenticate("google", {
+		scope: ["profile", "email"],
+	})
+);
 router.get(
 	"/google/callback",
 	passport.authenticate("google", {
 		failureRedirect: "/api/v1/auth/google/error",
 	}),
 	async (req, res) => {
-		console.log("req.user", req.user);
+		logger.info("req.user.id", req.user);
 		const user = req.user as User;
 		const token = generateJWTToken(user);
 
@@ -78,9 +84,8 @@ router.get(
 );
 
 router.get("/google/error", (req, res, info) => {
-	console.log("info", info);
-
-	res.send("Error logging in with Google");
+	logger.error("Error while singing in with Google", info);
+	res.send("Error while singing in with Google");
 });
 
 export default router;
