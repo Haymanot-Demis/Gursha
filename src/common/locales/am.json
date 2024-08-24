@@ -1,76 +1,77 @@
 {
-    "userNotFound": "ተጠቃሚው አልተገኘም።",
-    "invalidCredentials": "የተሳሳት ምስክርነት",
-    "emailAlreadyExists": "ይህ ኢሜይል አድራሻ ያለው መለያ አስቀድሞ አለ።",
-    "phoneNumberAlreadyExists": "ይህ ስልክ ቁጥር ያለው መለያ አስቀድሞ አለ።",
-    "emailNotVerified": "የኢሜይል አድራሻዎ አልተረጋገጠም። የማረጋገጫ ኮድ ለማግኘት እባክዎ ኢሜልዎን ይመልከቱ",
-    "phoneNotVerified": "ስልክ ቁጥርዎ አልተረጋገጠም። እባኮት ስልክ ቁጥርዎን ለማረጋገጥ እባኮት የስልኩን አጭር የጽሁፍ ሳጥን ይመልከቱ።",
-    "accountLocked": "በብዙ ያልተሳኩ የመግባት ሙከራዎች ምክንያት መለያህ ተቆልፏል።",
-    "invalidJWTToken": "የቀረበው ቶክን ልክ ያልሆነ ነው።",
-    "emailAlreadyVerified": "የኢሜል አድራሻዎ አስቀድሞ ተረጋግጧል።",
-    "phoneAlreadyVerified": "ስልክ ቁጥርዎ አስቀድሞ ተረጋግጧል።",
-    "tokenNotFound": "ያስገቡት ኮድ ሊገኝ አልቻለም።",
-    "emailVerificationTokenExpired": "የኢሜል ማረጋገጫ አጭር ኮድ ጊዜው አልፎበታል። እባክዎ ለአዲስ ማስመሰያ ኢሜልዎን ያረጋግጡ።",
-    "phoneVerificationTokenExpired": "የስልክ ቁጥር ማረጋገጫ አጭር ኮድ ጊዜው አልፎበታል። እባክዎ ለአዲስ ኮድ የስልክዎን አጭር ጽሁፍ መልዕክቶችዎን ይመልከቱ",
-    "passwordResetTokenExpired": "የይለፍ ቃል ዳግም ማስጀመር አጭር የጽሁፍ ኮድ ጊዜው አልፎበታል።",
-    "tooManyRequests": "በአጭር ጊዜ ውስጥ በጣም ብዙ ጥያቄዎችን አቅርበዋል። እባክዎን ትንሽ ይጠብቁ እና እንደገና ይሞክሩ።",
-    "internalServerError": "ያልተጠበቀ ስህተት ተከስቷል። እባክዎ ቆይተው እንደገና ይሞክሩ።",
-    "unauthorized": "ይህን ግብዓት ለመድረስ ፍቃድ የለዎትም።",
-    "unuthenticated": "ያልተረጋገጠ",
-    "registrationWithEmailSuccessful": "ምዝገባው ተሳክቷል። የማረጋገጫ ኮድ ለማግኘት እባክዎ ኢሜልዎን ያረጋግጡ።",
-    "registrationWithPhoneSuccessful": "ምዝገባው ተሳክቷል። የማረጋገጫ ኮድ ወደ ተንቀሳቃሽ ስልክ ቁጥርዎ ተልኳል።",
-    "verificationSuccessful": "አካውንትዎ ተሳካ ሁኔታ ተረጋግጧል።",
-    "loginSuccessful": "መግባቱ በተሳካ ሁኔታ ተጠናቅቋል።",
-    "passwordResetTokenSentToEmail": "የይለፍ ቃል ዳግም ማስጀመር አጭር ኮድ በተሳካ ሁኔታ ወደ ኢሜልዎ ተልኳል።",
-    "passwordResetTokenSentToPhone": "የይለፍ ቃል ዳግም ማስጀመር አጭር ኮድ በተሳካ ሁኔታ ወደ ተንቀሳቃሽ ስልክ ቁጥርዎ ተልኳል።",
-    "passwordResetSuccessful": "የይለፍ ቃል ዳግም ማስጀመር በተሳካ ሁኔታ ተጠናቅቋል።",
-    "passwordChangedSuccessfully": "የይለፍ ቃል በተሳካ ሁኔታ ተቀይሯል።",
-    "updateProfileSuccessful": "መገለጫ በተሳካ ሁኔታ ተዘምኗል።",
-    "refreshTokenCreated": "የማደስ ማስመሰያ በተሳካ ሁኔታ ተፈጥሯል።",
-    "firstName": {
-        "any.required": "የመጀመሪያ ስም ያስፈልጋል",
-        "string.min": "የመጀመሪያ ስም ቢያንስ 3 ፊደላት ርዝመት መሆን አለበት።",
-        "string.max": "የመጀመሪያ ስም ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።"
-    },
-    "lastName": {
-        "any.required": "የመጀመሪያ ስም ያስፈልጋል",
-        "string.min": "የመጀመሪያ ስም ቢያንስ 3 ፊደላት ርዝመት መሆን አለበት።",
-        "string.max": "የመጀመሪያ ስም ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።"
-    },
-    "email": {
-        "string.email": "ያስገቡት ኢሜይል ትክክለኛ የኢሜይል አድራሻ አይደለም።",
-        "any.required": "ኢሜል ያስፈልጋል",
-        "object.missing": "ኢሜል ወይም ስልክ ቁጥር ያስፈልጋል።"
-    },
-    "password": {
-        "any.required": "የይለፍ ቃል ያስፈልጋል",
-        "string.min": "የይለፍ ቃል ቢያንስ የ 6 ፊደላት ርዝመት መሆን አለበት።",
-        "string.max": "የይለፍ ቃል ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።",
-        "string.pattern.base": "የይለፍ ቃል ቢያንስ አንድ አቢይ ሆሄ፣ አንድ ትንሽ ሆሄ፣ አንድ ቁጥር እና አንድ ልዩ ፊደል መያዝ አለበት።"
-    },
-    "phoneNumber": {
-        "string.pattern.base": "ስልክ ቁጥር በ +2519XXXXXXXX መልክ መሆን አለበት"
-    },
-    "role": {
-        "any.required": "ሚና ያስፈልጋል",
-        "any.only": "ሚና 'client' ወይም 'merchant' መሆን አለበት"
-    },
-    "token": {
-        "any.required": "ቶክን ያስፈልጋል",
-        "string.length": "ቶክን 6 ፊደላት ርዝመት መሆን አለበት"
-    },
-    "oldPassword": {
-        "any.required": "የድሮ የይለፍ ቃል ያስፈልጋል",
-        "string.min": "የድሮ የይለፍ ቃል ያስፈልጋል ቢያንስ የ 6 ፊደላት ርዝመት መሆን አለበት።",
-        "string.max": "የድሮ የይለፍ ቃል ያስፈልጋል ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።"
-    },
-    "newPassword": {
-        "any.required": "አዲስ የይለፍ ቃል ያስፈልጋል",
-        "string.min": "አዲስ የይለፍ ቃል ቢያንስ 3 ፊደላት ርዝመት መሆን አለበት።",
-        "string.max": "አዲስ የይለፍ ቃል ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።",
-        "string.pattern.base": "አዲስ የይለፍ ቃል ቢያንስ አንድ አቢይ ሆሄ፣ አንድ ትንሽ ሆሄ፣ አንድ ቁጥር እና አንድ ልዩ ፊደል መያዝ አለበት።"
-    },
-    "refreshToken": {
-        "any.required": "ማደሻ ቶክን ያስፈልጋል"
-    }
+	"userNotFound": "ተጠቃሚው አልተገኘም።",
+	"invalidCredentials": "የተሳሳት ምስክርነት",
+	"emailAlreadyExists": "ይህ ኢሜይል አድራሻ ያለው መለያ አስቀድሞ አለ።",
+	"phoneNumberAlreadyExists": "ይህ ስልክ ቁጥር ያለው መለያ አስቀድሞ አለ።",
+	"emailNotVerified": "የኢሜይል አድራሻዎ አልተረጋገጠም። የማረጋገጫ ኮድ ለማግኘት እባክዎ ኢሜልዎን ይመልከቱ",
+	"phoneNotVerified": "ስልክ ቁጥርዎ አልተረጋገጠም። እባኮት ስልክ ቁጥርዎን ለማረጋገጥ እባኮት የስልኩን አጭር የጽሁፍ ሳጥን ይመልከቱ።",
+	"accountLocked": "በብዙ ያልተሳኩ የመግባት ሙከራዎች ምክንያት መለያህ ተቆልፏል።",
+	"invalidJWTToken": "የቀረበው ቶክን ልክ ያልሆነ ነው።",
+	"emailAlreadyVerified": "የኢሜል አድራሻዎ አስቀድሞ ተረጋግጧል።",
+	"phoneAlreadyVerified": "ስልክ ቁጥርዎ አስቀድሞ ተረጋግጧል።",
+	"tokenNotFound": "ያስገቡት ኮድ ሊገኝ አልቻለም።",
+	"emailVerificationTokenExpired": "የኢሜል ማረጋገጫ አጭር ኮድ ጊዜው አልፎበታል። እባክዎ ለአዲስ ማስመሰያ ኢሜልዎን ያረጋግጡ።",
+	"phoneVerificationTokenExpired": "የስልክ ቁጥር ማረጋገጫ አጭር ኮድ ጊዜው አልፎበታል። እባክዎ ለአዲስ ኮድ የስልክዎን አጭር ጽሁፍ መልዕክቶችዎን ይመልከቱ",
+	"passwordResetTokenExpired": "የይለፍ ቃል ዳግም ማስጀመር አጭር የጽሁፍ ኮድ ጊዜው አልፎበታል።",
+	"tooManyRequests": "በአጭር ጊዜ ውስጥ በጣም ብዙ ጥያቄዎችን አቅርበዋል። እባክዎን ትንሽ ይጠብቁ እና እንደገና ይሞክሩ።",
+	"internalServerError": "ያልተጠበቀ ስህተት ተከስቷል። እባክዎ ቆይተው እንደገና ይሞክሩ።",
+	"unauthorized": "ይህን ግብዓት ለመድረስ ፍቃድ የለዎትም።",
+	"unuthenticated": "ያልተረጋገጠ",
+	"registrationWithEmailSuccessful": "ምዝገባው ተሳክቷል። የማረጋገጫ ኮድ ለማግኘት እባክዎ ኢሜልዎን ያረጋግጡ።",
+	"registrationWithPhoneSuccessful": "ምዝገባው ተሳክቷል። የማረጋገጫ ኮድ ወደ ተንቀሳቃሽ ስልክ ቁጥርዎ ተልኳል።",
+	"verificationSuccessful": "አካውንትዎ ተሳካ ሁኔታ ተረጋግጧል።",
+	"loginSuccessful": "መግባቱ በተሳካ ሁኔታ ተጠናቅቋል።",
+	"passwordResetTokenSentToEmail": "የይለፍ ቃል ዳግም ማስጀመር አጭር ኮድ በተሳካ ሁኔታ ወደ ኢሜልዎ ተልኳል።",
+	"passwordResetTokenSentToPhone": "የይለፍ ቃል ዳግም ማስጀመር አጭር ኮድ በተሳካ ሁኔታ ወደ ተንቀሳቃሽ ስልክ ቁጥርዎ ተልኳል።",
+	"passwordResetSuccessful": "የይለፍ ቃል ዳግም ማስጀመር በተሳካ ሁኔታ ተጠናቅቋል።",
+	"passwordChangedSuccessfully": "የይለፍ ቃል በተሳካ ሁኔታ ተቀይሯል።",
+	"updateProfileSuccessful": "መገለጫ በተሳካ ሁኔታ ተዘምኗል።",
+	"refreshTokenCreated": "የማደስ ማስመሰያ በተሳካ ሁኔታ ተፈጥሯል።",
+	"firstName": {
+		"any.required": "የመጀመሪያ ስም ያስፈልጋል",
+		"string.min": "የመጀመሪያ ስም ቢያንስ 3 ፊደላት ርዝመት መሆን አለበት።",
+		"string.max": "የመጀመሪያ ስም ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።"
+	},
+	"lastName": {
+		"any.required": "የመጀመሪያ ስም ያስፈልጋል",
+		"string.min": "የመጀመሪያ ስም ቢያንስ 3 ፊደላት ርዝመት መሆን አለበት።",
+		"string.max": "የመጀመሪያ ስም ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።"
+	},
+	"email": {
+		"string.email": "ያስገቡት ኢሜይል ትክክለኛ የኢሜይል አድራሻ አይደለም።",
+		"any.required": "ኢሜል ያስፈልጋል",
+		"object.missing": "ኢሜል ወይም ስልክ ቁጥር ያስፈልጋል።"
+	},
+	"password": {
+		"any.required": "የይለፍ ቃል ያስፈልጋል",
+		"string.min": "የይለፍ ቃል ቢያንስ የ 6 ፊደላት ርዝመት መሆን አለበት።",
+		"string.max": "የይለፍ ቃል ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።",
+		"string.pattern.base": "የይለፍ ቃል ቢያንስ አንድ አቢይ ሆሄ፣ አንድ ትንሽ ሆሄ፣ አንድ ቁጥር እና አንድ ልዩ ፊደል መያዝ አለበት።"
+	},
+	"phoneNumber": {
+		"string.pattern.base": "ስልክ ቁጥር በ +2519XXXXXXXX መልክ መሆን አለበት",
+		"object.missing": "ኢሜል ወይም ስልክ ቁጥር ያስፈልጋል።"
+	},
+	"role": {
+		"any.required": "ሚና ያስፈልጋል",
+		"any.only": "ሚና 'client' ወይም 'merchant' መሆን አለበት"
+	},
+	"token": {
+		"any.required": "ቶክን ያስፈልጋል",
+		"string.length": "ቶክን 6 ፊደላት ርዝመት መሆን አለበት"
+	},
+	"oldPassword": {
+		"any.required": "የድሮ የይለፍ ቃል ያስፈልጋል",
+		"string.min": "የድሮ የይለፍ ቃል ያስፈልጋል ቢያንስ የ 6 ፊደላት ርዝመት መሆን አለበት።",
+		"string.max": "የድሮ የይለፍ ቃል ያስፈልጋል ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።"
+	},
+	"newPassword": {
+		"any.required": "አዲስ የይለፍ ቃል ያስፈልጋል",
+		"string.min": "አዲስ የይለፍ ቃል ቢያንስ 3 ፊደላት ርዝመት መሆን አለበት።",
+		"string.max": "አዲስ የይለፍ ቃል ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።",
+		"string.pattern.base": "አዲስ የይለፍ ቃል ቢያንስ አንድ አቢይ ሆሄ፣ አንድ ትንሽ ሆሄ፣ አንድ ቁጥር እና አንድ ልዩ ፊደል መያዝ አለበት።"
+	},
+	"refreshToken": {
+		"any.required": "ማደሻ ቶክን ያስፈልጋል"
+	}
 }

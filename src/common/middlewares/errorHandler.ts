@@ -15,12 +15,13 @@ export function errorHandler(
 	if (err instanceof customError.CustomError) {
 		if (err instanceof customError.ValidationError) {
 			console.log("details", err.details);
+
 			const { type } = err.details[0];
-			const { key } = err.details[0].context;
+			const { key, peers } = err.details[0].context;
 
 			res
 				.status(err.statusCode)
-				.json(new CustomResponse(false, res.__(key)[type]));
+				.json(new CustomResponse(false, res.__(key ?? peers[0])[type]));
 		} else {
 			res.status(err.statusCode).json(new CustomResponse(false, err.message));
 		}
