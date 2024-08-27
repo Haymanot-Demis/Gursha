@@ -32,6 +32,7 @@ import { TokenTypes } from "../common/config/constants";
 import tokenRepository from "../token/token.repository";
 import { sendSMSApi } from "../common/services/sms.service";
 import {
+	DEFAULT_PASSWORD,
 	LOCK_ACCOUNT_DURATION,
 	resetPasswordExpirationSeconds,
 	verifyEmailOrPhoneNumberExpirationSeconds,
@@ -196,6 +197,57 @@ export default class AuthController {
 		user.lockCount = 0;
 		user.isAccountLocked = false;
 		await userRepository.save(user);
+
+		const token = generateJWTToken(user);
+
+		const refreshToken = new Token();
+		refreshToken.token = token.refreshToken;
+		refreshToken.user = user;
+		refreshToken.expirationDate = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000
+		); // 7 days
+		refreshToken.type = TokenTypes.REFRESH_TOKEN;
+
+		// todo: we have to remove the previous refresh token
+		const oldRefreshToken = await tokenRepository.findOne({
+			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
+		});
+
+		if (oldRefreshToken) {
+			await tokenRepository.remove(oldRefreshToken);
+		}
+
+		await tokenRepository.save(refreshToken);
+		user.passwordHash = undefined;
+
+		res.status(200).json(
+			new CustomResponse(true, successMessages(res).loginSuccessful, {
+				...token,
+				user,
+			})
+		);
+	});
+
+	loginWithGoogle = catchAsync(async (req: Request, res: Response) => {
+		const { displayName, email, phoneNumber, isEmailVerified } = req.body;
+		const [firstName, lastName] = displayName.split(" ");
+		let user: User | undefined;
+		user = await userRepository.findOne({
+			where: { email },
+		});
+
+		if (!user) {
+			user = new User();
+			user.email = email;
+			user.firstName = firstName;
+			user.lastName = lastName;
+			user.phoneNumber = phoneNumber;
+			user.passwordHash = await bcryptHash(DEFAULT_PASSWORD);
+			user.isEmailVerified = isEmailVerified;
+			// todo: define role
+			// todo: if email is not verified, send verification email
+			await userRepository.save(user);
+		}
 
 		const token = generateJWTToken(user);
 

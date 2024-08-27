@@ -45,48 +45,6 @@ router.put(
 );
 router.put("/unlock", authController.unlock);
 
-router.get(
-	"/google",
-	passport.authenticate("google", {
-		scope: ["profile", "email"],
-	})
-);
-
-router.get(
-	"/google/callback",
-	passport.authenticate("google", {
-		failureRedirect: "/api/v1/auth/google/error",
-	}),
-	async (req, res) => {
-		logger.info("req.user.id", req.user);
-		const user = req.user as User;
-		const token = generateJWTToken(user);
-
-		const refreshToken = new Token();
-		refreshToken.token = token.refreshToken;
-		refreshToken.user = user;
-		refreshToken.expirationDate = new Date(
-			Date.now() + 7 * 24 * 60 * 60 * 1000
-		); // 7 days
-		refreshToken.type = TokenTypes.REFRESH_TOKEN;
-
-		// todo: we have to remove the previous refresh token
-		const oldRefreshToken = await tokenRepository.findOne({
-			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
-		});
-
-		await tokenRepository.save(refreshToken);
-		user.passwordHash = undefined;
-
-		res
-			.status(200)
-			.json(new CustomResponse(true, "Login successful", { ...token, user }));
-	}
-);
-
-router.get("/google/error", (req, res, info) => {
-	logger.error("Error while singing in with Google", info);
-	res.send("Error while singing in with Google");
-});
+router.post("/google", authController.loginWithGoogle);
 
 export default router;

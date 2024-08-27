@@ -82,4 +82,5 @@ export const authScema = {
 	refreshToken: Joi.object({
 		refreshToken: Joi.string().required(),
 	}),
+	loginWithGoogle: Joi.object({}),
 };
