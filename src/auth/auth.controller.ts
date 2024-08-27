@@ -583,4 +583,19 @@ export default class AuthController {
 			.status(200)
 			.json(new CustomResponse(true, "Account unlocked successfully"));
 	});
+
+	remove = catchAsync(async (req: Request, res: Response) => {
+		const { id } = req.params;
+		const user = await userRepository.findOne({ where: { id } });
+
+		if (!user) {
+			throw new ResourceNotFoundError(errorMessages(res).userNotFound);
+		}
+
+		await userRepository.remove(user);
+
+		res
+			.status(200)
+			.json(new CustomResponse(true, "Account removed successfully"));
+	});
 }
