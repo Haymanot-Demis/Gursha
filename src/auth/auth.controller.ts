@@ -229,7 +229,7 @@ export default class AuthController {
 	});
 
 	loginWithGoogle = catchAsync(async (req: Request, res: Response) => {
-		const { displayName, email, phoneNumber, isEmailVerified } = req.body;
+		const { displayName, email, isEmailVerified, role } = req.body;
 		const [firstName, lastName] = displayName.split(" ");
 		let user: User | undefined;
 		user = await userRepository.findOne({
@@ -241,9 +241,9 @@ export default class AuthController {
 			user.email = email;
 			user.firstName = firstName;
 			user.lastName = lastName;
-			user.phoneNumber = phoneNumber;
 			user.passwordHash = await bcryptHash(DEFAULT_PASSWORD);
 			user.isEmailVerified = isEmailVerified;
+			user.role = role;
 			// todo: define role
 			// todo: if email is not verified, send verification email
 			await userRepository.save(user);

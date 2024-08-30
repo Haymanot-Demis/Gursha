@@ -73,5 +73,14 @@
 	},
 	"refreshToken": {
 		"any.required": "ማደሻ ቶክን ያስፈልጋል"
+	},
+	"isEmailVerified": {
+		"any.required": "ኢሜል የተረጋገጠ ያስፈልጋል",
+		"boolean.base": "ኢሜል የተረጋገጠ ቡሊያን መሆን አለበት።"
+	},
+	"displayName": {
+		"any.required": "ሙሉ ስም ያስፈልጋል",
+		"string.min": "ሙሉ ስም ቢያንስ 3 ፊደላት ርዝመት መሆን አለበት።",
+		"string.max": "ሙሉ ስም ከ 30 ፊደላት ርዝመት በላይ መሆን የለበትም።"
 	}
 }

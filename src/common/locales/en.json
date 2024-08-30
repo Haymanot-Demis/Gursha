@@ -73,5 +73,14 @@
 	},
 	"refreshToken": {
 		"any.required": "Refresh Token is required"
+	},
+	"isEmailVerified": {
+		"any.required": "isEmailVerified is required",
+		"boolean.base": "isEmailVerified must be a boolean"
+	},
+	"displayName": {
+		"any.required": "Display Name is required",
+		"string.min": "Display Name must be at least 3 characters long",
+		"string.max": "Display Name must be no more than 30 characters long"
 	}
 }
