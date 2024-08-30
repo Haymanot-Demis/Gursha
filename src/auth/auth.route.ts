@@ -45,7 +45,12 @@ router.put(
 );
 router.put("/unlock", authController.unlock);
 
-router.post("/google", authController.loginWithGoogle);
+router.post(
+	"/google",
+	validate(authScema.loginWithGoogle, validationSource.BODY),
+	authController.loginWithGoogle
+);
+
 router.delete("/remove/:id", authController.remove);
 router.delete("/removeAll", authController.removeAll);
 

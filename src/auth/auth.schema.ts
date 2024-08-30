@@ -82,5 +82,10 @@ export const authScema = {
 	refreshToken: Joi.object({
 		refreshToken: Joi.string().required(),
 	}),
-	loginWithGoogle: Joi.object({}),
+	loginWithGoogle: Joi.object({
+		displayName: Joi.string().required().min(3).max(30),
+		email: Joi.string().email().required(),
+		isEmailVerified: Joi.boolean().required(),
+		role: Joi.string().required().valid(Role.CLIENT, Role.MERCHANT),
+	}),
 };
