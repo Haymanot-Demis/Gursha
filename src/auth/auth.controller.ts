@@ -598,4 +598,12 @@ export default class AuthController {
 			.status(200)
 			.json(new CustomResponse(true, "Account removed successfully"));
 	});
+
+	removeAll = catchAsync(async (req: Request, res: Response) => {
+		await userRepository.delete({});
+
+		res
+			.status(200)
+			.json(new CustomResponse(true, "All accounts removed successfully"));
+	});
 }
