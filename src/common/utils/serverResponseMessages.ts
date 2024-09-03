@@ -20,6 +20,8 @@ export const errorMessages = (res: Response) => {
 		unuthenticated: res.__("unuthenticated"),
 		unauthorized: res.__("unauthorized"),
 		internalServerError: res.__("internalServerError"),
+		businessNotFound: "Business not found",
+		branchNotFound: "Branch not found",
 	};
 };
 

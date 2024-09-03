@@ -28,7 +28,7 @@ import {
 	sendVerificationEmail,
 } from "../common/services/email.service";
 import Token from "../token/token.model";
-import { TokenTypes } from "../common/config/constants";
+import { Role, TokenTypes } from "../common/config/constants";
 import tokenRepository from "../token/token.repository";
 import { sendSMSApi } from "../common/services/sms.service";
 import {
@@ -42,6 +42,8 @@ import {
 	successMessages,
 } from "../common/utils/serverResponseMessages";
 import logger from "../common/middlewares/logger";
+import Businees from "../business/business.model";
+import businessRepository from "../business/business.respository";
 
 export default class AuthController {
 	register = catchAsync(async (req: Request, res: Response) => {
@@ -67,15 +69,18 @@ export default class AuthController {
 			throw new ResourceAlreadyExistsError(errMessage);
 		}
 
-		const user = new User();
-		user.firstName = firstName;
-		user.lastName = lastName;
-		user.email = email;
-		user.passwordHash = await bcryptHash(password);
-		user.phoneNumber = phoneNumber;
-		user.role = role;
+		const user = await userRepository.createUser({ ...req.body });
 
 		await userRepository.save(user);
+
+		if (role == Role.MERCHANT) {
+			// create a new business
+			const business = new Businees();
+			business.user = user;
+			business.name = req.body.businessName;
+			await businessRepository.save(business);
+			console.log("business", business);
+		}
 
 		const token = generateToken(
 			user,
@@ -527,6 +532,8 @@ export default class AuthController {
 
 		await userRepository.save(user);
 		user.passwordHash = undefined;
+
+		await tokenRepository.remove(resetToken);
 
 		res.status(200).json(
 			new CustomResponse(true, successMessages(res).passwordResetSuccessful, {
