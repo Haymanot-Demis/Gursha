@@ -22,6 +22,7 @@ export const errorMessages = (res: Response) => {
 		internalServerError: res.__("internalServerError"),
 		businessNotFound: "Business not found",
 		branchNotFound: "Branch not found",
+		branchManagerNotFound: "Branch Manager not found",
 	};
 };
 

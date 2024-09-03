@@ -153,7 +153,8 @@ export default class UserController {
 
 			const branchManager = await branchManagerRepository.createBranchManager(
 				user,
-				branch
+				branch,
+				business.user
 			);
 
 			const token = generateToken(

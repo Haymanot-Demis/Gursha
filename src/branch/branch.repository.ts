@@ -9,13 +9,14 @@ const branchRepository = appDataSource.getRepository(Branch).extend({
 		return this.findOne({ where: { id } });
 	},
 	async findByBusinessId(businessId: string) {
-		return this.findOne({ where: { business: { id: businessId } } });
+		return this.find({ where: { business: { id: businessId } } });
 	},
-	async createBranch({ name, address, business }) {
+	async createBranch({ name, address, business, createdBy }) {
 		const branch = new Branch();
 		branch.name = name;
 		branch.address = address;
 		branch.business = business;
+		branch.createdBy = createdBy;
 		await this.save(branch);
 		return branch;
 	},

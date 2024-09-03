@@ -18,10 +18,36 @@ import { errorMessages } from "../common/utils/serverResponseMessages";
 import businessRepository from "../business/business.respository";
 
 export default class BranchController {
-	// CRUD
+	getAll = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { id } = req.user as User;
+			const business = await businessRepository.findByUserId(id);
+
+			if (!business) {
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
+			}
+
+			const branches = await branchRepository.findByBusinessId(business.id);
+
+			res.status(200).json(new CustomResponse(true, "", { branches }));
+		}
+	);
+
+	getOneById = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { branchId } = req.params;
+			const branch = await branchRepository.findById(branchId);
+
+			if (!branch) {
+				throw new ResourceNotFoundError(errorMessages(res).branchNotFound);
+			}
+
+			res.status(200).json(new CustomResponse(true, "", { branch }));
+		}
+	);
+
 	create = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { name, address } = req.body;
 			const { id } = req.user;
 			const businessOwner = await userRepository.findUserById(id);
 
@@ -35,11 +61,11 @@ export default class BranchController {
 				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
 			}
 
-			const branch = new Branch();
-			branch.name = name;
-			branch.address = address;
-			branch.business = business;
-			branch.createdBy = businessOwner;
+			const branch = await branchRepository.createBranch({
+				...req.body,
+				business,
+				createdBy: businessOwner,
+			});
 
 			await branchRepository.save(branch);
 
@@ -51,13 +77,13 @@ export default class BranchController {
 
 	update = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { id } = req.params;
+			const { branchId } = req.params;
 			const { name, address } = req.body;
 
-			const branch = await branchRepository.findById(id);
+			const branch = await branchRepository.findById(branchId);
 
 			if (!branch) {
-				throw new ResourceNotFoundError("Branch not found");
+				throw new ResourceNotFoundError(errorMessages(res).branchNotFound);
 			}
 
 			branch.name = name;
@@ -66,6 +92,21 @@ export default class BranchController {
 			await branchRepository.save(branch);
 
 			res.status(200).json(new CustomResponse(true, "Branch updated", branch));
+		}
+	);
+
+	delete = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { branchId } = req.params;
+			const branch = await branchRepository.findById(branchId);
+
+			if (!branch) {
+				throw new ResourceNotFoundError(errorMessages(res).branchNotFound);
+			}
+
+			await branchRepository.remove(branch);
+
+			res.status(200).json();
 		}
 	);
 }
