@@ -44,6 +44,9 @@ export default class User implements IUser {
 	@Column({ type: "enum", enum: Role, default: Role.CLIENT })
 	role: Role;
 
+	@Column({ nullable: true })
+	profilePictureUrl: string;
+
 	@CreateDateColumn()
 	createdAt: Date;
 

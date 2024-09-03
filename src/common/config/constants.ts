@@ -1,6 +1,10 @@
 export enum Role {
 	CLIENT = "client",
 	MERCHANT = "merchant",
+	ADMIN = "admin",
+	SALES = "sales",
+	CUSTOMER_SUPPORT = "customerSupport",
+	BRANCH_MANAGER = "branchManager",
 }
 
 export enum TokenTypes {
