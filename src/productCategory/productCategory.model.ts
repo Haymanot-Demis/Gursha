@@ -6,12 +6,16 @@ import {
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
+	Tree,
+	TreeChildren,
+	TreeParent,
 	UpdateDateColumn,
 } from "typeorm";
 
 import Base from "../common/models/base.interface";
 
 @Entity()
+@Tree("closure-table")
 export default class ProductCategory implements Base {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
@@ -22,15 +26,11 @@ export default class ProductCategory implements Base {
 	@Column({ nullable: true })
 	description: string;
 
-	@OneToOne(() => ProductCategory, { onDelete: "CASCADE", nullable: true })
-	@JoinColumn()
+	@TreeParent()
 	parent: ProductCategory;
 
-	@OneToMany(() => ProductCategory, (category) => category.parent)
+	@TreeChildren()
 	children: ProductCategory[];
-
-	@Column()
-	isLeaf: boolean;
 
 	@CreateDateColumn()
 	createdAt: Date;

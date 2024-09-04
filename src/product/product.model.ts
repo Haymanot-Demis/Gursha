@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import Base from "../common/models/base.interface";
-import ProductCategory from "../productCategory/prodctCategory.model";
+import ProductCategory from "../productCategory/productCategory.model";
 
 @Entity()
 export default class Product implements Base {

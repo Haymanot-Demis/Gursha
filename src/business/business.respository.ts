@@ -8,6 +8,13 @@ const businessRepository = appDataSource.getRepository(Business).extend({
 			relations: ["user"],
 		});
 	},
+	async updateBusiness(business: Business, data: any): Promise<Business> {
+		Object.keys(data).forEach((key) => {
+			business[key] = data[key];
+		});
+
+		return this.save(business);
+	},
 });
 
 export default businessRepository;

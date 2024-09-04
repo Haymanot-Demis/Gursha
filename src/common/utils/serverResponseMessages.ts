@@ -23,6 +23,7 @@ export const errorMessages = (res: Response) => {
 		businessNotFound: "Business not found",
 		branchNotFound: "Branch not found",
 		branchManagerNotFound: "Branch Manager not found",
+		categoryNotFound: "Category not found",
 	};
 };
 
