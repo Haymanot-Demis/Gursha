@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
 	Request,
 	Response,
@@ -265,6 +266,59 @@ export default class AuthController {
 		refreshToken.type = TokenTypes.REFRESH_TOKEN;
 
 		// todo: we have to remove the previous refresh token
+		const oldRefreshToken = await tokenRepository.findOne({
+			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
+		});
+
+		if (oldRefreshToken) {
+			await tokenRepository.remove(oldRefreshToken);
+		}
+
+		await tokenRepository.save(refreshToken);
+		user.passwordHash = undefined;
+
+		res.status(200).json(
+			new CustomResponse(true, successMessages(res).loginSuccessful, {
+				...token,
+				user,
+			})
+		);
+	});
+
+	loginWithFacebook = catchAsync(async (req: Request, res: Response) => {
+		const { accessToken, role } = req.body;
+
+		const { data: profile } = await axios.get(
+			`https://graph.facebook.com/v13.0/me?fields=name,email&access_token=${accessToken}`
+		);
+
+		const { first_name, last_name, email, picture } = profile;
+		const user = await userRepository.findUserByEmail(email);
+
+		if (!user) {
+			const newUser = new User();
+			newUser.email = email;
+			newUser.isEmailVerified = true;
+			newUser.firstName = first_name;
+			newUser.lastName = last_name;
+			newUser.profilePictureUrl = picture.data.url;
+			newUser.passwordHash = await bcryptHash(DEFAULT_PASSWORD);
+			newUser.role = role;
+			await userRepository.save(newUser);
+		}
+
+		const token = generateJWTToken(user);
+
+		const refreshToken = new Token();
+		refreshToken.token = token.refreshToken;
+		refreshToken.user = user;
+		refreshToken.expirationDate = new Date(
+			Date.now() + 7 * 24 * 60 * 60 * 1000
+		); // 7 days
+
+		refreshToken.type = TokenTypes.REFRESH_TOKEN;
+
+		// remove the previous refresh token
 		const oldRefreshToken = await tokenRepository.findOne({
 			where: { user: { id: user.id }, type: TokenTypes.REFRESH_TOKEN },
 		});

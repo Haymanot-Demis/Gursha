@@ -16,10 +16,10 @@ export default class OrderItem implements Base {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@ManyToOne(() => Order)
+	@ManyToOne(() => Order, (order) => order.orderItems, { onDelete: "CASCADE" })
 	order: Order;
 
-	@ManyToOne(() => BranchProdct)
+	@ManyToOne(() => BranchProdct, { onDelete: "SET NULL" })
 	product: BranchProdct;
 
 	@Column()

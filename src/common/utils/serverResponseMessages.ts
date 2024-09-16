@@ -24,6 +24,9 @@ export const errorMessages = (res: Response) => {
 		branchNotFound: "Branch not found",
 		branchManagerNotFound: "Branch Manager not found",
 		categoryNotFound: "Category not found",
+		productNotFound: "Product not found",
+		branchProductNotFound: "Branch Product not found",
+		branchProductExists: "Branch Product already exists",
 	};
 };
 

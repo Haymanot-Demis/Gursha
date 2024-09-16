@@ -1,21 +1,25 @@
 import jwt from "jsonwebtoken";
 import User from "../../user/user.model";
-import { JWT_SECRET, SALT } from "../config/config";
+import {
+	accessExpirationSeconds,
+	JWT_SECRET,
+	refreshExpirationSeconds,
+	SALT,
+} from "../config/config";
 import bcrypt from "bcrypt";
 import { unauthunticatedError } from "./error";
-import { errorMessages } from "./serverResponseMessages";
 
 const generateJWTToken = (user: User) => {
 	const accessToken = jwt.sign(
 		{ id: user.id, email: user.email, role: user.role },
 		JWT_SECRET,
-		{ expiresIn: "15m" }
+		{ expiresIn: accessExpirationSeconds }
 	);
 
 	const refreshToken = jwt.sign(
 		{ id: user.id, email: user.email, role: user.role },
 		JWT_SECRET,
-		{ expiresIn: "7d" }
+		{ expiresIn: refreshExpirationSeconds }
 	);
 
 	return { accessToken, refreshToken };

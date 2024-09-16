@@ -3,6 +3,7 @@ import {
 	CreateDateColumn,
 	Entity,
 	ManyToOne,
+	PrimaryColumn,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm";
@@ -15,14 +16,26 @@ export default class BranchProdct implements Base {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@ManyToOne(() => Product)
+	@PrimaryColumn()
+	productId: string;
+
+	@PrimaryColumn()
+	branchId: string;
+
+	@ManyToOne(() => Product, { onDelete: "CASCADE" })
 	product: Product;
 
-	@ManyToOne(() => Branch)
+	@ManyToOne(() => Branch, { onDelete: "CASCADE" })
 	branch: Branch;
 
 	@Column()
 	stockAmount: number;
+
+	@Column()
+	price: number;
+
+	@Column({ default: true })
+	isAvailable: boolean;
 
 	@CreateDateColumn()
 	createdAt: Date;

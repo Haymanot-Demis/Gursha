@@ -1,6 +1,14 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	ManyToOne,
+	PrimaryGeneratedColumn,
+	UpdateDateColumn,
+} from "typeorm";
 import Base from "../common/models/base.interface";
 import ProductCategory from "../productCategory/productCategory.model";
+import Business from "../business/business.model";
 
 @Entity()
 export default class Product implements Base {
@@ -13,9 +21,20 @@ export default class Product implements Base {
 	@Column()
 	price: number;
 
-	@ManyToOne(() => ProductCategory)
+	@ManyToOne(() => ProductCategory, { onDelete: "SET NULL" })
 	category: ProductCategory;
 
+	@ManyToOne(() => Business, (business) => business.products, {
+		onDelete: "CASCADE",
+	})
+	business: Business;
+
+	@Column({ type: "simple-array" })
+	pictures: string[];
+
+	@CreateDateColumn()
 	createdAt: Date;
+
+	@UpdateDateColumn()
 	updatedAt: Date;
 }

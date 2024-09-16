@@ -7,6 +7,7 @@ export default interface IUser extends Base {
 	email: string;
 	passwordHash: string;
 	phoneNumber: string;
+	profilePictureUrl: string;
 	isAccountLocked: boolean;
 	lockUntil: Date;
 	lockCount: number;

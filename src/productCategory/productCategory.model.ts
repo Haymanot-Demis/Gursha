@@ -23,7 +23,7 @@ export default class ProductCategory implements Base {
 	@Column({ type: "varchar", length: 255, nullable: false, unique: true })
 	name: string;
 
-	@Column({ nullable: true })
+	@Column({ default: "" })
 	description: string;
 
 	@TreeParent()
