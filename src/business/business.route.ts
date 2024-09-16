@@ -36,6 +36,15 @@ router.put(
 );
 
 router.put(
+	"/updateLogo",
+	authenticate,
+	uploadImage.single("logo"),
+	businessController.updateBusinessLogo
+);
+
+router.put("/removeLogo", authenticate, businessController.removeBusinessLogo);
+
+router.put(
 	"/submitForReview",
 	authenticate,
 	businessController.submitForReview
