@@ -11,6 +11,7 @@ import {
 import { IBusiness } from "./business.model.interface";
 import Branch from "../branch/branch.model";
 import User from "../user/user.model";
+import Product from "../product/product.model";
 
 @Entity()
 export default class Business implements IBusiness {
@@ -33,10 +34,10 @@ export default class Business implements IBusiness {
 	website: string;
 
 	@Column({ nullable: true })
-	bannerPhotoUrl: string;
+	logoPhotoUrl: string;
 
-	@OneToMany(() => Branch, (branch) => branch.business)
-	branches: Branch[];
+	@Column({ nullable: true })
+	bannerPhotoUrl: string;
 
 	@Column({ nullable: true })
 	description: string;
@@ -51,7 +52,16 @@ export default class Business implements IBusiness {
 	BusinessSector: string;
 
 	@Column({ default: false })
+	isReadyForReview: boolean;
+
+	@Column({ default: false })
 	isVerified: boolean;
+
+	@OneToMany(() => Branch, (branch) => branch.business)
+	branches: Branch[];
+
+	@OneToMany(() => Product, (product) => product.business)
+	products: Product[];
 
 	@OneToOne(() => User, { onDelete: "CASCADE" })
 	@JoinColumn()

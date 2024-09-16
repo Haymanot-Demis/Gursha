@@ -26,6 +26,9 @@ export default class User implements IUser {
 	@Column({ nullable: true, unique: true })
 	phoneNumber: string;
 
+	@Column({ default: "" })
+	profilePictureUrl: string;
+
 	@Column({ default: false })
 	isEmailVerified: boolean;
 
@@ -43,9 +46,6 @@ export default class User implements IUser {
 
 	@Column({ type: "enum", enum: Role, default: Role.CLIENT })
 	role: Role;
-
-	@Column({ nullable: true })
-	profilePictureUrl: string;
 
 	@CreateDateColumn()
 	createdAt: Date;

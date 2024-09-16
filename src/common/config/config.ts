@@ -47,3 +47,5 @@ export const LOCK_ACCOUNT_DURATION = [
 	+envVars.LOCK_ACCOUNT_TIME,
 	+envVars.LOCK_ACCOUNT_TIME2,
 ];
+
+export const CLOUDINARY_URL = envVars.CLOUDINARY_URL;

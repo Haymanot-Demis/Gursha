@@ -24,10 +24,12 @@ export default class Branch implements IBranch {
 	@Column({ nullable: false })
 	address: string;
 
-	@ManyToOne(() => Businees, (business) => business.branches)
+	@ManyToOne(() => Businees, (business) => business.branches, {
+		onDelete: "CASCADE",
+	})
 	business: Businees;
 
-	@ManyToOne(() => User, { onDelete: "CASCADE" })
+	@ManyToOne(() => User, { onDelete: "SET NULL" })
 	createdBy: User;
 
 	@OneToMany(() => CustomerSupport, (customerSupport) => customerSupport.branch)

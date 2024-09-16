@@ -20,7 +20,7 @@ export default class Order implements Base {
 	@OneToMany(() => OrderItem, (orderItem) => orderItem.order)
 	orderItems: OrderItem[];
 
-	@ManyToOne(() => User)
+	@ManyToOne(() => User, { onDelete: "SET NULL" })
 	customer: User;
 
 	@Column()

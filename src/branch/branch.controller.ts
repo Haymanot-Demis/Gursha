@@ -68,6 +68,8 @@ export default class BranchController {
 			});
 
 			await branchRepository.save(branch);
+			branch.business = undefined;
+			branch.createdBy = undefined;
 
 			res
 				.status(200)
