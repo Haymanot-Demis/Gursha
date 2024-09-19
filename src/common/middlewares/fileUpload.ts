@@ -104,13 +104,9 @@ const uploadVideo = multer({
 // upload any file
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		console.log("file", file);
-
 		cb(null, "uploads/any");
 	},
 	filename: function (req, file, cb) {
-		console.log("file", file);
-
 		cb(null, file.originalname);
 	},
 });
