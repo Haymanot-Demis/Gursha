@@ -52,7 +52,15 @@ const productRepository = appDataSource.getRepository(Product).extend({
 		return this.findOne({ where: { id } });
 	},
 	async findByBusinessId(businessId: string): Promise<Product[]> {
-		return this.find({ where: { businessId } });
+		return this.find({ where: { business: { id: businessId } } });
+	},
+	async findByBusinessIdAndProductId(
+		businessId: string,
+		productId: string
+	): Promise<Product> {
+		return this.findOne({
+			where: { id: productId, business: { id: businessId } },
+		});
 	},
 	async removeAllProducts(businessId: string): Promise<void> {
 		this.delete({ businessId });

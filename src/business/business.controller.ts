@@ -14,9 +14,7 @@ export default class BusinessController {
 			const business = await businessRepository.findByUserId(id);
 
 			if (!business) {
-				return next(
-					new ResourceNotFoundError(errorMessages(res).businessNotFound)
-				);
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
 			}
 
 			res
@@ -31,9 +29,7 @@ export default class BusinessController {
 			const business = await businessRepository.findById(businessId);
 
 			if (!business) {
-				return next(
-					new ResourceNotFoundError(errorMessages(res).businessNotFound)
-				);
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
 			}
 
 			res.status(200).json(new CustomResponse(true, "", { business }));
@@ -94,10 +90,49 @@ export default class BusinessController {
 		}
 	);
 
+	updateBusinessBannerById = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { businessId } = req.params;
+			const business = await businessRepository.findById(businessId);
+
+			if (!business) {
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
+			}
+
+			// @ts-ignore
+			business.bannerPhotoUrl = await cloudinaryUploader(req.file.path);
+
+			const updatedBusiness = await businessRepository.save(business);
+
+			res
+				.status(200)
+				.json(new CustomResponse(true, "", { businessInfo: updatedBusiness }));
+		}
+	);
+
 	removeBusinessBanner = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
 			const { id } = req.user as User;
 			const business = await businessRepository.findByUserId(id);
+
+			if (!business) {
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
+			}
+
+			business.bannerPhotoUrl = null;
+
+			const updatedBusiness = await businessRepository.save(business);
+
+			res
+				.status(200)
+				.json(new CustomResponse(true, "", { businessInfo: updatedBusiness }));
+		}
+	);
+
+	removeBusinessBannerById = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { businessId } = req.params;
+			const business = await businessRepository.findById(businessId);
 
 			if (!business) {
 				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
@@ -133,10 +168,49 @@ export default class BusinessController {
 		}
 	);
 
+	updateBusinessLogoById = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { businessId } = req.params;
+			const business = await businessRepository.findById(businessId);
+
+			if (!business) {
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
+			}
+
+			// @ts-ignore
+			business.logoPhotoUrl = await cloudinaryUploader(req.file.path);
+
+			const updatedBusiness = await businessRepository.save(business);
+
+			res
+				.status(200)
+				.json(new CustomResponse(true, "", { businessInfo: updatedBusiness }));
+		}
+	);
+
 	removeBusinessLogo = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
 			const { id } = req.user as User;
 			const business = await businessRepository.findByUserId(id);
+
+			if (!business) {
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
+			}
+
+			business.logoPhotoUrl = null;
+
+			const updatedBusiness = await businessRepository.save(business);
+
+			res
+				.status(200)
+				.json(new CustomResponse(true, "", { businessInfo: updatedBusiness }));
+		}
+	);
+
+	removeBusinessLogoId = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { businessId } = req.params;
+			const business = await businessRepository.findById(businessId);
 
 			if (!business) {
 				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
@@ -158,9 +232,27 @@ export default class BusinessController {
 			const business = await businessRepository.findByUserId(id);
 
 			if (!business) {
-				return next(
-					new ResourceNotFoundError(errorMessages(res).businessNotFound)
-				);
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
+			}
+
+			const updatedBusiness = await businessRepository.updateBusiness(
+				business,
+				req.body
+			);
+
+			res
+				.status(200)
+				.json(new CustomResponse(true, "", { businessInfo: updatedBusiness }));
+		}
+	);
+
+	updateBusinessInfoById = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { businessId } = req.params;
+			const business = await businessRepository.findById(businessId);
+
+			if (!business) {
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
 			}
 
 			const updatedBusiness = await businessRepository.updateBusiness(

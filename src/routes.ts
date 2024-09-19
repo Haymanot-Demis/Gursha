@@ -5,6 +5,8 @@ import businessRouter from "./business/business.route";
 import branchRouter from "./branch/branch.route";
 import branchManagerRouter from "./branchManager/branchManager.route";
 import productCategoryRouter from "./productCategory/productCategory.route";
+import productRouter from "./product/product.route";
+import branchProductRouter from "./product/branchProduct.route";
 
 const router = Router();
 
@@ -14,5 +16,7 @@ router.use("/business", businessRouter);
 router.use("/branch", branchRouter);
 router.use("/branchManager", branchManagerRouter);
 router.use("/productCategory", productCategoryRouter);
+router.use("/product", productRouter);
+router.use("/branchProduct", branchProductRouter);
 
 export default router;

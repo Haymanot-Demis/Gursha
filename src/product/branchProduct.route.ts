@@ -1,24 +1,39 @@
 import { Router } from "express";
 
 import BranchProductController from "./branchProduct.controller";
+import { authenticate } from "../common/middlewares/auth";
 
 const router = Router();
 const branchProductController = new BranchProductController();
 
-router.get("/getBranchProduct", branchProductController.getBranchProduct);
-router.get("/getBranchProducts", branchProductController.getBranchProducts);
-router.put("/addProductToBranch", branchProductController.addProductToBranch);
-router.put("/updateBranchProduct", branchProductController.updateBranchProduct);
+router.get("/getBranchProduct/:id", branchProductController.getBranchProduct);
+router.get(
+	"/getBranchProducts/:branchId",
+	branchProductController.getBranchProducts
+);
+router.post(
+	"/addProductToBranch",
+	authenticate,
+	branchProductController.addProductToBranch
+);
 router.put(
-	"/toggleProductAvailability",
+	"/updateBranchProduct/:id",
+	authenticate,
+	branchProductController.updateBranchProduct
+);
+router.put(
+	"/toggleProductAvailability/:id",
+	authenticate,
 	branchProductController.toggleProductAvailability
 );
 router.delete(
 	"/removeProductFromBranch",
+	authenticate,
 	branchProductController.removeProductFromBranch
 );
 router.delete(
 	"/removeAllProductsFromBranch",
+	authenticate,
 	branchProductController.removeAllProductsFromBranch
 );
 
