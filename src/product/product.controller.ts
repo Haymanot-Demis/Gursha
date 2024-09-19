@@ -16,9 +16,9 @@ import productRepository from "./product.repository";
 export default class ProductController {
 	getBusinessProduct = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { id } = req.params;
+			const { productId } = req.params;
 
-			const product = await productRepository.findById(id);
+			const product = await productRepository.findById(productId);
 
 			if (!product) {
 				return next(
@@ -32,9 +32,25 @@ export default class ProductController {
 
 	getBusinessProducts = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { BusinessId } = req.params;
+			const { businessId } = req.params;
 			// todo: pagination
-			const products = await productRepository.findByBusinessId(BusinessId);
+			const products = await productRepository.findByBusinessId(businessId);
+
+			res.status(200).json(new CustomResponse(true, "", { products }));
+		}
+	);
+
+	getMyBusinessProducts = catchAsync(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const { id } = req.user as User;
+			const business = await businessRepository.findByUserId(id);
+
+			if (!business) {
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
+			}
+
+			// todo: pagination
+			const products = await productRepository.findByBusinessId(business.id);
 
 			res.status(200).json(new CustomResponse(true, "", { products }));
 		}
@@ -46,19 +62,16 @@ export default class ProductController {
 			const business = await businessRepository.findByUserId(id);
 
 			if (!business) {
-				return next(
-					new ResourceNotFoundError(errorMessages(res).businessNotFound)
-				);
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
 			}
 
-			const { branches: branchIds } = req.body;
+			const { branches: branchIds = [] } = req.body;
+			console.log("branchIds", branchIds);
 
 			const branches = branchIds.map(async (branchId: string) => {
 				const branch = await branchRepository.findById(branchId);
 				if (!branch) {
-					return next(
-						new ResourceNotFoundError(errorMessages(res).branchNotFound)
-					);
+					throw new ResourceNotFoundError(errorMessages(res).branchNotFound);
 				}
 				return branch;
 			});
@@ -87,30 +100,38 @@ export default class ProductController {
 	updateProduct = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
 			const { id } = req.user as User;
+			const { productId } = req.params;
+
 			const business = await businessRepository.findByUserId(id);
 
 			if (!business) {
-				return next(
-					new ResourceNotFoundError(errorMessages(res).businessNotFound)
-				);
+				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
 			}
+
+			const product = await productRepository.findByBusinessIdAndProductId(
+				business.id,
+				productId
+			);
 
 			const pictures = await extractImages(req);
 
 			// update the product
-			const product = await productRepository.updateProduct({
+			const updatedProduct = await productRepository.updateProduct({
+				product,
 				...req.body,
 				pictures,
 			});
 
-			res.status(200).json(new CustomResponse(true, "", { product }));
+			res
+				.status(200)
+				.json(new CustomResponse(true, "", { product: updatedProduct }));
 		}
 	);
 
 	removeProduct = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { id } = req.params;
-			const product = await productRepository.findById(id);
+			const { productId } = req.params;
+			const product = await productRepository.findById(productId);
 
 			if (!product) {
 				return next(

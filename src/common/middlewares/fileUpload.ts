@@ -4,7 +4,7 @@ import crypto from "crypto";
 import { ValidationError } from "./../utils/error";
 
 // allowed image types
-const imageTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
+const imageTypes = ["jpeg", "png", "jpg", "gif"];
 // allowed file types docx, pdf
 const fileTypes = [
 	"application/msword",
@@ -65,7 +65,10 @@ const videoStorage = multer.diskStorage({
 
 // file type valiation
 const imageFileFilter = (req: Request, file, cb) => {
-	if (imageTypes.includes(file.mimetype)) {
+	const ls = file.originalname.split(".");
+	const ext = ls[ls.length - 1];
+
+	if (imageTypes.includes(ext)) {
 		return cb(null, true);
 	}
 	cb(new ValidationError("File type not supported"), false);

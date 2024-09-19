@@ -224,18 +224,26 @@ export default class AuthController {
 		}
 
 		await tokenRepository.save(refreshToken);
+
+		let business;
+		if (user.role == Role.MERCHANT) {
+			business = await businessRepository.findByUserId(user.id);
+		}
+
 		user.passwordHash = undefined;
 
 		res.status(200).json(
 			new CustomResponse(true, successMessages(res).loginSuccessful, {
 				...token,
 				user,
+				business,
 			})
 		);
 	});
 
 	loginWithGoogle = catchAsync(async (req: Request, res: Response) => {
-		const { displayName, email, isEmailVerified, role } = req.body;
+		const { displayName, email, profilePictureUrl, isEmailVerified, role } =
+			req.body;
 		const [firstName, lastName] = displayName.split(" ");
 		let user: User | undefined;
 		user = await userRepository.findOne({
@@ -249,6 +257,7 @@ export default class AuthController {
 			user.lastName = lastName;
 			user.passwordHash = await bcryptHash(DEFAULT_PASSWORD);
 			user.isEmailVerified = isEmailVerified;
+			user.profilePictureUrl = profilePictureUrl;
 			user.role = role;
 			// todo: define role
 			// todo: if email is not verified, send verification email

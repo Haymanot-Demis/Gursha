@@ -67,6 +67,9 @@ export default class Business implements IBusiness {
 	@JoinColumn()
 	user: User;
 
+	@Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
+	rating: number;
+
 	@CreateDateColumn()
 	createdAt: Date;
 

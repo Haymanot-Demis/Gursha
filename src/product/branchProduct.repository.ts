@@ -26,6 +26,9 @@ const branchProductRepository = appDataSource
 			branchProduct.price = price;
 			return this.save(branchProduct);
 		},
+		async findById(id: string): Promise<BranchProdct> {
+			return this.findOne({ where: { id } });
+		},
 		async findByBranchIdAndProdId(
 			branchId: string,
 			productId: string

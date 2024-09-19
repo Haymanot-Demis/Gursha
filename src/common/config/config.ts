@@ -49,3 +49,4 @@ export const LOCK_ACCOUNT_DURATION = [
 ];
 
 export const CLOUDINARY_URL = envVars.CLOUDINARY_URL;
+export const NGROK_AUTH_TOKEN = envVars.NGROK_AUTH_TOKEN;

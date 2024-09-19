@@ -12,12 +12,9 @@ import branchProductRepository from "./branchProduct.repository";
 export default class BranchProdctController {
 	getBranchProduct = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { branchId, productId } = req.params;
+			const { id } = req.params;
 
-			const product = await branchProductRepository.findByBranchIdAndProdId(
-				branchId,
-				productId
-			);
+			const product = await branchProductRepository.findById(id);
 
 			if (!product) {
 				return next(
@@ -42,7 +39,7 @@ export default class BranchProdctController {
 
 	addProductToBranch = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { branchId, productId, stockAmount, price } = req.params;
+			const { branchId, productId, stockAmount, price } = req.body;
 
 			const product = await branchProductRepository.findByBranchIdAndProdId(
 				branchId,
@@ -68,19 +65,17 @@ export default class BranchProdctController {
 
 	updateBranchProduct = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { branchId, productId } = req.params;
+			const { id } = req.params;
 
-			const branchProduct =
-				await branchProductRepository.findByBranchIdAndProdId(
-					branchId,
-					productId
-				);
+			const branchProduct = await branchProductRepository.findById(id);
 
 			if (!branchProduct) {
 				return next(
 					new ResourceNotFoundError(errorMessages(res).branchProductNotFound)
 				);
 			}
+
+			console.log("req.body", req.body);
 
 			await branchProductRepository.updateBranchProduct({
 				branchProduct,
@@ -93,13 +88,9 @@ export default class BranchProdctController {
 
 	removeProductFromBranch = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { branchId, productId } = req.params;
+			const { id } = req.params;
 
-			const branchProduct =
-				await branchProductRepository.findByBranchIdAndProdId(
-					branchId,
-					productId
-				);
+			const branchProduct = await branchProductRepository.findById(id);
 
 			if (!branchProduct) {
 				return next(
@@ -135,13 +126,9 @@ export default class BranchProdctController {
 
 	toggleProductAvailability = catchAsync(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const { branchId, productId } = req.params;
+			const { id } = req.params;
 
-			const branchProduct =
-				await branchProductRepository.findByBranchIdAndProdId(
-					branchId,
-					productId
-				);
+			const branchProduct = await branchProductRepository.findById(id);
 
 			if (!branchProduct) {
 				return next(

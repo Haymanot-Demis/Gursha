@@ -1,6 +1,8 @@
 import app from "./app";
-import { APP_PORT } from "./common/config/config";
+import { APP_PORT, NGROK_AUTH_TOKEN } from "./common/config/config";
 import { appDataSource } from "./common/config/data-source";
+
+console.log("NGROK_AUTH_TOKEN", NGROK_AUTH_TOKEN);
 
 const main = async () => {
 	try {

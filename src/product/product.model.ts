@@ -7,7 +7,6 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 import Base from "../common/models/base.interface";
-import ProductCategory from "../productCategory/productCategory.model";
 import Business from "../business/business.model";
 
 @Entity()
@@ -21,15 +20,20 @@ export default class Product implements Base {
 	@Column()
 	price: number;
 
-	@ManyToOne(() => ProductCategory, { onDelete: "SET NULL" })
-	category: ProductCategory;
+	// @ManyToOne(() => ProductCategory, { onDelete: "SET NULL" })
+	// category: ProductCategory;
+	@Column()
+	category: string;
+
+	@Column({ default: "" })
+	description: string;
 
 	@ManyToOne(() => Business, (business) => business.products, {
 		onDelete: "CASCADE",
 	})
 	business: Business;
 
-	@Column({ type: "simple-array" })
+	@Column({ type: "simple-array", nullable: true })
 	pictures: string[];
 
 	@CreateDateColumn()
