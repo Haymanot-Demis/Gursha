@@ -7,7 +7,10 @@ import {
 } from "../common/config/extended.express";
 import { CustomResponse } from "../common/config/response";
 import { catchAsync } from "../common/utils/asyncHandler";
-import { ResourceNotFoundError } from "../common/utils/error";
+import {
+	ResourceAlreadyExistsError,
+	ResourceNotFoundError,
+} from "../common/utils/error";
 import { extractImages } from "../common/utils/request";
 import { errorMessages } from "../common/utils/serverResponseMessages";
 import User from "../user/user.model";
@@ -65,8 +68,13 @@ export default class ProductController {
 				throw new ResourceNotFoundError(errorMessages(res).businessNotFound);
 			}
 
+			const isProductExist = await productRepository.findByName(req.body.name);
+
+			if (isProductExist) {
+				throw new ResourceAlreadyExistsError(errorMessages(res).productExist);
+			}
+
 			const { branches: branchIds = [] } = req.body;
-			console.log("branchIds", branchIds);
 
 			const branches = branchIds.map(async (branchId: string) => {
 				const branch = await branchRepository.findById(branchId);
