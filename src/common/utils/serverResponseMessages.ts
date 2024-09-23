@@ -27,6 +27,7 @@ export const errorMessages = (res: Response) => {
 		productNotFound: "Product not found",
 		branchProductNotFound: "Branch Product not found",
 		branchProductExists: "Branch Product already exists",
+		productExist: "Product with the same name already exists",
 	};
 };
 

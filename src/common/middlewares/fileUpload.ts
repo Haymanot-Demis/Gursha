@@ -1,7 +1,7 @@
 import { Request } from "express";
 import multer from "multer";
 import crypto from "crypto";
-import { ValidationError } from "./../utils/error";
+import { BadRequest } from "./../utils/error";
 
 // allowed image types
 const imageTypes = ["jpeg", "png", "jpg", "gif"];
@@ -68,26 +68,32 @@ const imageFileFilter = (req: Request, file, cb) => {
 	const ls = file.originalname.split(".");
 	const ext = ls[ls.length - 1];
 
-	if (imageTypes.includes(ext)) {
+	if (imageTypes.includes(ext.toLowerCase())) {
 		return cb(null, true);
 	}
-	cb(new ValidationError("File type not supported"), false);
+	cb(new BadRequest(`${ext} File type not supported`), false);
 };
 
 // DocFile type valiation
 const docFileFilter = (req: Request, file, cb) => {
-	if (fileTypes.includes(file.mimetype)) {
+	const ls = file.originalname.split(".");
+	const ext = ls[ls.length - 1];
+
+	if (fileTypes.includes(ext.toLowerCase())) {
 		return cb(null, true);
 	}
-	cb(new ValidationError("File type not supported"), false);
+	cb(new BadRequest(`${ext} File type not supported`), false);
 };
 
 // Video type valiation
 const videoFileFilter = (req: Request, file, cb) => {
-	if (videoTypes.includes(file.mimetype.toString().toLowerCase())) {
+	const ls = file.originalname.split(".");
+	const ext = ls[ls.length - 1];
+
+	if (videoTypes.includes(ext.toLowerCase())) {
 		return cb(null, true);
 	}
-	cb(new ValidationError("File type not supported"), false);
+	cb(new BadRequest(`${ext} File type not supported`), false);
 };
 
 // multer upload middleware for images, files and videos
