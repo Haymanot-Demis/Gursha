@@ -4,7 +4,7 @@ import crypto from "crypto";
 import { BadRequest } from "./../utils/error";
 
 // allowed image types
-const imageTypes = ["jpeg", "png", "jpg", "gif"];
+const imageTypes = ["jpeg", "png", "jpg", "gif", "heic"];
 // allowed file types docx, pdf
 const fileTypes = [
 	"application/msword",

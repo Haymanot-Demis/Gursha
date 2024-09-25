@@ -101,7 +101,11 @@ export default class ProductController {
 			// then add the product to own
 			// branch only and send the product to the merchant for approval
 
-			res.status(201).json(new CustomResponse(true, "", { product }));
+			res
+				.status(201)
+				.json(
+					new CustomResponse(true, "", { ...product, business: undefined })
+				);
 		}
 	);
 
