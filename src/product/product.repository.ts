@@ -12,6 +12,7 @@ const productRepository = appDataSource.getRepository(Product).extend({
 		name,
 		price,
 		category,
+		desciption,
 		pictures,
 		business,
 	}): Promise<Product> {
@@ -19,6 +20,7 @@ const productRepository = appDataSource.getRepository(Product).extend({
 		product.name = name;
 		product.price = price;
 		product.category = category;
+		product.description = desciption;
 		product.business = business;
 		product.pictures = pictures;
 		return this.save(product);
@@ -28,11 +30,13 @@ const productRepository = appDataSource.getRepository(Product).extend({
 		name,
 		pictures,
 		price,
+		description,
 		category,
 	}): Promise<Product> {
 		product.name = name;
 		product.price = price;
 		product.pictures = pictures;
+		product.description = description;
 		product.category = category;
 		return this.save(product);
 	},
